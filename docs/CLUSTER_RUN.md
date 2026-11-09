@@ -105,6 +105,14 @@ Recommended order:
 
 The full plan combines core and upstream arms and is expensive. Review the dry-run episode counts and worker-call upper bound before starting it. Writer and embedding calls are additional.
 
+**Important:** the default `smoke` plan checks only the no-memory, playbook, random, and BM25 paths. Before the full run, smoke-test every selected adapter with a paired no-memory baseline. For the complete registered matrix, after installing optional packages and starting both local endpoints, run:
+
+    for method in playbook random recent full_history bm25 success_bm25 outcome_bm25 bandit contextual_bandit supervised_writer reflexion expel letta_consolidation bayesian_state evolutionary amem amem_evolving reasoning_bank ace agent_kb awm mem0 skillweaver lightweight_memory; do
+      python scripts/run_experiment.py --plan smoke --methods "none,$method" || exit 1
+    done
+
+Each command creates a separate small run directory. Do not proceed to the full plan if any adapter smoke fails; inspect its log/configuration and fix it first. The evolutionary smoke includes its validation-only candidate search.
+
 Do not resume by reusing an old output directory. The runner intentionally refuses this because upstream's cached episode JSON does not replay the corresponding memory update. Start a fresh run with a fresh store.
 
 ## 7. Codex handoff prompt
