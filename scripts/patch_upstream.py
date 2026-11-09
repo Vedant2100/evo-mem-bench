@@ -30,7 +30,7 @@ def ensure_import(path: Path, statement: str) -> None:
         if line.startswith("import ") or line.startswith("from "):
             insertion = index + 1
             break
-    lines.insert(insertion, statement + "\\n")
+    lines.insert(insertion, statement + "\n")
     path.write_text("".join(lines))
 
 
@@ -341,7 +341,11 @@ def patch(upstream: Path, adapter: Path) -> None:
         if _cap:
             conversation = _cap_memory_suffix(conversation, _base_prompt, _cap)
 '''
-    replace_one(evaluator, injection_before, injection_after, "memory-only token cap")
+    # patch_episode_cleanup() later indents eval_one's body, so on a second
+    # bootstrap the full injection block has different indentation. Detect the
+    # stable marker instead of relying on an exact whitespace-sensitive match.
+    if '_cap = int(os.environ.get("EVO_MEM_MAX_INJECT_TOKENS"' not in evaluator.read_text():
+        replace_one(evaluator, injection_before, injection_after, "memory-only token cap")
 
     factory_before = '''    raise ValueError(
         f"Unknown memory_type: {memory_type!r}. "'''
