@@ -1,4 +1,5 @@
 name: Official ALFWorld CPU preflight
+# Run sequential close/reset stress after upstream resource-release fix.
 
 on:
   push:
