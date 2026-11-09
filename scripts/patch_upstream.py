@@ -20,6 +20,20 @@ def replace_one(path: Path, old: str, new: str, label: str) -> None:
     path.write_text(current.replace(old, new))
 
 
+def ensure_import(path: Path, statement: str) -> None:
+    current = path.read_text()
+    if re.search(r"^" + re.escape(statement) + r"$", current, flags=re.MULTILINE):
+        return
+    lines = current.splitlines(keepends=True)
+    insertion = 0
+    for index, line in enumerate(lines):
+        if line.startswith("import ") or line.startswith("from "):
+            insertion = index + 1
+            break
+    lines.insert(insertion, statement + "\\n")
+    path.write_text("".join(lines))
+
+
 def replace_section(path: Path, start: str, end: str, replacement: str, label: str) -> None:
     current = path.read_text()
     if replacement.strip() in current:
