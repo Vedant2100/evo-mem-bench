@@ -76,6 +76,7 @@ MODES = {
     "random",
     "recent",
     "full_history",
+    "bm25",
     "success_bm25",
     "outcome_bm25",
     "bandit",
@@ -418,6 +419,8 @@ class ControlledMemory(BaseMemory):
             return self._bm25(query, eligible), "BM25 over successful episodes"
         if self.mode == "outcome_bm25":
             return self._bm25(query, self.entries), "Outcome-labelled BM25"
+        if self.mode == "bm25":
+            return self._bm25(query, self.entries), "BM25 over all prior episodes"
         if self.mode == "bandit":
             self.last_arm = self._choose_ucb_arm()
             arm = self.last_arm
