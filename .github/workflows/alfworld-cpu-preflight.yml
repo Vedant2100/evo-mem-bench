@@ -1,0 +1,102 @@
+name: Official ALFWorld CPU preflight
+
+on:
+  push:
+    paths:
+      - '.github/workflows/alfworld-cpu-preflight.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-game-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      ALFWORLD_DATA: /home/runner/.cache/alfworld
+      ALFWORLD_PORT: '36005'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Check disk and bootstrap original pinned evaluator
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h .
+          bash scripts/bootstrap_upstream.sh
+          python -m compileall -q vendor/EvoMemBench/Cross-Episode-Execution/Embodied-AI/CROSSEP-EMB/scripts
+
+      - name: Install original ALFWorld server, including game assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd vendor/EvoMemBench/Cross-Episode-Execution/Embodied-AI/CROSSEP-EMB/agentenv-alfworld
+          bash setup.sh > /tmp/alfworld-setup.log 2>&1 || { tail -150 /tmp/alfworld-setup.log; exit 1; }
+          df -h .
+          find "$ALFWORLD_DATA" -name game.tw-pddl | wc -l
+
+      - name: Launch original server and reset official test item 2420
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash scripts/start_server.sh > /tmp/alfworld-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill "$SERVER_PID" 2>/dev/null || true' EXIT
+          READY=0
+          for attempt in $(seq 1 60); do
+            if curl --connect-timeout 2 --max-time 4 --fail -s http://127.0.0.1:36005/ > /tmp/alfworld-health.json; then
+              READY=1
+              break
+            fi
+            sleep 3
+          done
+          if [ "$READY" != "1" ]; then
+            echo "::error::ALFWorld server did not respond"
+            tail -120 /tmp/alfworld-server.log
+            exit 1
+          fi
+          python - <<'PY'
+          import json, urllib.request
+          def post(path, body=None):
+              request = urllib.request.Request(
+                  "http://127.0.0.1:36005" + path,
+                  headers={"Content-Type": "application/json"},
+                  method="POST",
+                  data=json.dumps(body or {}).encode(),
+              )
+              with urllib.request.urlopen(request, timeout=120) as reply:
+                  return json.loads(reply.read().decode())
+          created = post("/create")
+          assert "id" in created and "error" not in created, created
+          reset = post("/reset", {"id":created["id"],"game":2420,"world_type":"Text"})
+          assert "error" not in reset, reset
+          assert "observation" in reset and "available_actions" in reset, reset
+          report = {
+              "status": "passed",
+              "task_id": 2420,
+              "observation_excerpt": str(reset["observation"])[:350],
+              "action_count": len(reset["available_actions"]),
+              "original_game_data": True,
+              "no_model_calls": True,
+              "no_gpu": True,
+          }
+          print(json.dumps(report, indent=2))
+          open("alfworld-preflight.json","w").write(json.dumps(report,indent=2)+"\n")
+          PY
+
+      - name: Upload original environment diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: alfworld-cpu-preflight
+          path: |
+            alfworld-preflight.json
+            /tmp/alfworld-setup.log
+            /tmp/alfworld-server.log
+          if-no-files-found: warn
+          retention-days: 30
