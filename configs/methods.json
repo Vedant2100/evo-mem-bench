@@ -24,6 +24,7 @@
   "letta_consolidation": {
     "kind": "controlled",
     "mode": "letta_consolidation",
+    "requires": ["EVO_MEM_LLM_BASE_URL"],
     "params": {"consolidate_every": 5}
   },
   "bayesian_state": {"kind": "controlled", "mode": "bayesian_state"},
