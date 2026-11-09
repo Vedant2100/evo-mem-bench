@@ -487,7 +487,7 @@ class ControlledMemory(BaseMemory):
         return capped("\n\n".join(parts), self.max_context_tokens)
 
     def _inject_bayesian(self, query: str) -> str:
-        category = category_from_observation(query)
+        category = self._category(query)
         state = self.bayes.get(category)
         if not state:
             return ""
