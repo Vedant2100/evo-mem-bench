@@ -80,6 +80,72 @@ def patch(upstream, adapter):
     raise ValueError(
         f"Unknown memory_type: {memory_type!r}. "'''
     replace_one(factory, factory_before, factory_after, "controlled memory factory")
+    # The upstream server retains every completed TextWorld game instance.
+    # Sequential experiment runs can therefore exhaust simulator resources.
+    # This explicit close operation only releases the finished episode's
+    # environment; parallel episodes remain untouched.
+    server = component / "agentenv-alfworld/agentenv_alfworld/server.py"
+    model = component / "agentenv-alfworld/agentenv_alfworld/model.py"
+    wrapper = component / "agentenv-alfworld/agentenv_alfworld/env_wrapper.py"
+    client = component / "agentenv/agentenv/envs/alfworld.py"
+    replace_one(
+        model,
+        "class StepRequestBody(BaseModel):",
+        "class CloseRequestBody(BaseModel):\n    id: int\n\n\nclass StepRequestBody(BaseModel):",
+        "close request model",
+    )
+    close_route = (
+        '@app.post("/close")\n'
+        "async def close(body: CloseRequestBody):\n"
+        "    return server.close(body.id)\n\n\n"
+    )
+    replace_one(
+        server,
+        '@app.post("/reset")',
+        close_route + '@app.post("/reset")',
+        "close environment endpoint",
+    )
+    close_method = (
+        "    def close(self, idx: int):\n"
+        "        try:\n"
+        "            self._check_id(idx, True)\n"
+        "            instance = self.env_init.pop(idx, None)\n"
+        "            if instance is not None:\n"
+        "                instance.close()\n"
+        "            self.env.pop(idx, None)\n"
+        "            self.info.pop(idx, None)\n"
+        "            if idx in self.ls:\n"
+        "                self.ls.remove(idx)\n"
+        "            return {'id': idx, 'closed': True}\n"
+        "        except Exception as exc:\n"
+        "            return {'error': 'close_failed: ' + str(exc)}\n\n"
+    )
+    replace_one(
+        wrapper,
+        "    def get_observation(self, idx: int):",
+        close_method + "    def get_observation(self, idx: int):",
+        "close completed TextWorld game",
+    )
+    replace_one(
+        client,
+        '        response = self._post("reset", {"game": game, "world_type": world_type})\n',
+        '        response = self._post("reset", {"game": game, "world_type": world_type})\n'
+        '        if "error" in response:\n'
+        '            raise RuntimeError(f"ALFWorld server could not reset game {game}: {response[chr(101)+chr(114)+chr(114)+chr(111)+chr(114)]}")\n',
+        "expose original server reset error",
+    )
+    replace_one(
+        evaluator,
+        "    return data_idx, conversation, reward, total_pt, total_ct, total_cached, sample_latency, total_llm_latency, rounds, inject_stats, update_stats",
+        "    try:\n"
+        "        response = client.close()\n"
+        "        if isinstance(response, dict) and response.get('error'):\n"
+        "            print('ALFWORLD_CLOSE_WARNING', response['error'])\n"
+        "    except Exception as exc:\n"
+        "        print('ALFWORLD_CLOSE_WARNING', repr(exc))\n"
+        "    return data_idx, conversation, reward, total_pt, total_ct, total_cached, sample_latency, total_llm_latency, rounds, inject_stats, update_stats",
+        "close finished episode from evaluator",
+    )
     shutil.copy2(adapter, component / "scripts/memory/controlled_adapter.py")
     (component / ".controlled_patch.json").write_text(json.dumps({
         "patch_version": 1, "temperature": True, "memory_only_cap": True,
