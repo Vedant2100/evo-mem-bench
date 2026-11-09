@@ -86,3 +86,7 @@ python -m evomembench.experiment --model Qwen/Qwen3-32B \
   --base-url http://127.0.0.1:8000/v1 --worlds 36 --seeds 11,22,33 \
   --gate --output runs/hidden_rules_01
 ~~~
+
+## Free Kaggle GPU runner (optional)
+
+A GitHub Actions controller can launch the repository's **hidden-rule diagnostic** on a free Kaggle notebook GPU, monitor status every 30 minutes, and collect JSON results. It is **not yet the full ALFWorld evaluator**. GPU launches are explicitly opt-in and require Kaggle credentials stored as GitHub Actions secrets. See [Kaggle setup](docs/KAGGLE.md).

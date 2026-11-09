@@ -1,0 +1,89 @@
+name: Kaggle EvoMemBench GPU controller
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Launch a GPU test, inspect status, or collect results'
+        type: choice
+        required: true
+        default: status
+        options: [status, launch, collect]
+      model:
+        description: 'Allowed small local Qwen checkpoint for a free Kaggle T4'
+        required: false
+        default: 'Qwen/Qwen2.5-1.5B-Instruct'
+      worlds:
+        description: '6 to 24; start small'
+        required: false
+        default: '6'
+      seeds:
+        required: false
+        default: '11'
+      methods:
+        required: false
+        default: 'none,oracle,bm25,success_only'
+  push:
+    branches: [main]
+    paths:
+      - kaggle/launch-request.json
+  schedule:
+    - cron: '17,47 * * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kaggle-evomembench-controller
+  cancel-in-progress: false
+
+jobs:
+  control:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      KAGGLE_API_TOKEN: ${{ secrets.KAGGLE_API_TOKEN }}
+      KAGGLE_KERNEL_REF: ${{ vars.KAGGLE_KERNEL_REF }}
+      KAGGLE_ALLOW_FIRST_LAUNCH: ${{ vars.KAGGLE_ALLOW_FIRST_LAUNCH }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install official Kaggle CLI
+        run: python -m pip install 'kaggle>=1.7,<2'
+      - name: Control or observe the Kaggle GPU run
+        env:
+          OPERATION: ${{ inputs.operation }}
+          MODEL: ${{ inputs.model }}
+          WORLDS: ${{ inputs.worlds }}
+          SEEDS: ${{ inputs.seeds }}
+          METHODS: ${{ inputs.methods }}
+          EVENT_NAME: ${{ github.event_name }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$EVENT_NAME" == 'schedule' ]]; then
+            python scripts/kaggle_controller.py --action status
+          elif [[ "$EVENT_NAME" == 'push' ]]; then
+            python scripts/kaggle_controller.py --action from-request --source-sha "$GITHUB_SHA"
+          else
+            python scripts/kaggle_controller.py \
+              --action "$${OPERATION:-status}" \
+              --source-sha "$GITHUB_SHA" \
+              --model "$${MODEL:-Qwen/Qwen2.5-1.5B-Instruct}" \
+              --worlds "$${WORLDS:-6}" \
+              --seeds "$${SEEDS:-11}" \
+              --methods "$${METHODS:-none,oracle,bm25,success_only}"
+          fi
+      - name: Publish monitoring and result artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kaggle-controller-${{ github.run_id }}
+          path: |
+            kaggle_status.json
+            kaggle_logs.txt
+            kaggle-output/
+          if-no-files-found: ignore
+          retention-days: 30

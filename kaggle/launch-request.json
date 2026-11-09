@@ -1,0 +1,15 @@
+{
+  "armed": false,
+  "request_id": "not-launched",
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "worlds": 6,
+  "seeds": [
+    11
+  ],
+  "methods": [
+    "none",
+    "oracle",
+    "bm25",
+    "success_only"
+  ]
+}
