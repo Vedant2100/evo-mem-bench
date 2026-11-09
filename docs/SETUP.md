@@ -1,53 +1,99 @@
-# Setup and execution
+# Setup
 
-## Bootstrap
-Run `bash scripts/bootstrap_upstream.sh`. The script clones the official EvoMemBench and pins commit `3efc221fd8d5f4de7c2dc2022357e600d26325c7`; it fails closed if the evaluator signature changes.
+## 1. Clone and pin the official benchmark
 
-## ALFWorld server
-Upstream recommends a separate Python 3.9 Conda environment:
-```bash
-conda create -n evomem-server python=3.9 -y
-conda activate evomem-server
-cd vendor/EvoMemBench/Cross-Episode-Execution/Embodied-AI/CROSSEP-EMB/agentenv-alfworld
-bash setup.sh
-cd /path/to/evo-mem-bench
-bash scripts/start_server.sh
-```
-The server's default port is 36005. The upstream `setup.sh` downloads ALFWorld data; expect significant disk usage.
+    git clone https://github.com/Vedant2100/evo-mem-bench.git
+    cd evo-mem-bench
+    bash scripts/bootstrap_upstream.sh
 
-## Evaluator
-A separate Python 3.10 environment:
-```bash
-conda create -n evomem-eval python=3.10 -y
-conda activate evomem-eval
-pip install -e '.[eval,test]'
-pip install -e vendor/EvoMemBench/Cross-Episode-Execution/Embodied-AI/CROSSEP-EMB/agentenv
-```
-Some optional upstream memory adapters need their own packages. Only install expensive dependencies you are going to use.
+The bootstrap script checks out the exact upstream commit recorded in configs/experiment.json, applies the strict idempotent patcher, copies the controlled adapter into the official memory factory, and compiles the evaluator. Do not manually edit the vendored upstream checkout; change scripts/patch_upstream.py and rerun bootstrap instead.
 
-## Model endpoint
+## 2. Evaluator environment
 
-For OpenAI-compatible model serving, fill `.env` with `WORKER_API_MODE=standard`, `OPENAI_API_KEY`, `OPENAI_BASE_URL`, `WORKER_MODEL`; the runner passes `--model WORKER_MODEL` to the unchanged upstream worker. Local vLLM is possible. **Do not assume a Qwen checkpoint is capable before running the competence pilot.**
+Use Python 3.10 or newer for the experiment runner/evaluator:
 
-For the original Volcengine ARK batch path, set `WORKER_API_MODE=batch`, `DEEPSEEK_API_KEY`, `BATCH_MODEL`, and run the same worker model across conditions. Official memory writers can have additional ARK and DashScope keys.
+    python -m venv .venv-eval
+    source .venv-eval/bin/activate
+    python -m pip install --upgrade pip
+    python -m pip install -e '.[eval,test]'
+    python -m pip install -e vendor/EvoMemBench/Cross-Episode-Execution/Embodied-AI/CROSSEP-EMB/agentenv
+    python -m pytest -q
 
-## Commands
-```bash
-python -m pytest -q
-python scripts/prepare_manifest.py --validate-only
-python scripts/run_experiment.py --plan smoke --dry-run
-python scripts/run_experiment.py --plan smoke
-python scripts/run_experiment.py --plan competence --dry-run
-python scripts/run_experiment.py --plan heldout --dry-run
-python scripts/run_experiment.py --plan original --dry-run
-python scripts/run_experiment.py --plan learned --dry-run
-python scripts/run_experiment.py --plan transfer --dry-run
-```
-Dry-run never calls inference. To limit expense, use `--train-per-category`, `--test-per-category`, `--methods`, and `--seeds`. Do not run costly plans without reviewing the estimated upper-bound worker calls.
+On a managed cluster, use the cluster's supported Conda or Apptainer workflow instead of creating a venv if required by policy.
 
-## Cross-run statistics
-```bash
-python scripts/analyze_results.py runs/RUN_ID
-```
+## 3. ALFWorld server environment
 
-The runner refuses to reuse existing run directories. Upstream per-episode file caching **is not** safe as a memory-learning resume mechanism because skipped outputs do not replay memory updates.
+The upstream game server uses its own Python environment. Follow the official ALFWorld setup from the pinned checkout:
+
+    conda create -n evomem-server python=3.9 -y
+    conda activate evomem-server
+    cd vendor/EvoMemBench/Cross-Episode-Execution/Embodied-AI/CROSSEP-EMB/agentenv-alfworld
+    bash setup.sh
+
+The official setup downloads ALFWorld assets and can use substantial disk space. Run it once on persistent storage. Then return to the repository root and start the server:
+
+    cd /path/to/evo-mem-bench
+    bash scripts/start_server.sh
+
+The default server port is 36005. Keep the server alive in the same allocation/node as the evaluator. The runner uses sequential episode execution and explicitly closes each finished environment.
+
+## 4. Local model endpoints
+
+The runner uses the official OpenAI-compatible worker interface. A local vLLM server is supported.
+
+Set the worker variables in .env:
+
+    OPENAI_BASE_URL=http://127.0.0.1:8000/v1
+    OPENAI_API_KEY=local
+    WORKER_MODEL=YOUR_CHAT_MODEL_ID
+    WORKER_TEMPERATURE=0
+
+Memory-writer arms default to the same local model:
+
+    EVO_MEM_LLM_BASE_URL=http://127.0.0.1:8000/v1
+    EVO_MEM_LLM_API_KEY=local
+    EVO_MEM_LLM_MODEL=YOUR_CHAT_MODEL_ID
+
+Embedding-backed upstream systems use a separate OpenAI-compatible embedding endpoint:
+
+    DASHSCOPE_BASE_URL=http://127.0.0.1:8001/v1
+    DASHSCOPE_API_KEY=local
+    EVO_MEM_EMBED_MODEL=YOUR_EMBEDDING_MODEL_ID
+
+The variable names DASHSCOPE_* are retained because the upstream adapters read them; the endpoint may be local. They do not imply that a DashScope account is required.
+
+For the custom core plan, only the chat endpoint is needed. For A-MEM, ReasoningBank, AgentKB, AWM, and Mem0, start the embedding endpoint too.
+
+## 5. Optional upstream method packages
+
+Install only the systems selected in your plan:
+
+    bash scripts/install_memory_methods.sh amem
+    bash scripts/install_memory_methods.sh agent_kb awm
+    bash scripts/install_memory_methods.sh mem0
+
+Or install all optional packages:
+
+    bash scripts/install_memory_methods.sh all
+
+ACE, ReasoningBank, SkillWeaver, and Lightweight Memory use the pinned upstream source and do not need a separate provider API key when local endpoints are configured. A-MEM, AgentKB, AWM, and Mem0 also use the local endpoints configured above.
+
+## 6. Verify before running
+
+    python scripts/prepare_manifest.py --validate-only
+    python scripts/run_experiment.py --plan smoke --dry-run
+    python scripts/run_experiment.py --plan competence --dry-run
+
+The runner checks the pinned upstream commit, patch version, task maps, method packages, model endpoints, and ALFWorld server port. Dry-run never invokes inference.
+
+Run a smoke test before any larger plan:
+
+    python scripts/run_experiment.py --plan smoke
+
+Then run the competence gate. If the worker is too weak or already at ceiling, stop and reconsider before running every memory method.
+
+## 7. Analyze
+
+    python scripts/analyze_results.py runs/RUN_ID
+
+Each run directory is unique and immutable. The runner refuses to reuse it. Upstream episode caching is not used to resume online memory streams because skipping an episode does not replay its memory update.
