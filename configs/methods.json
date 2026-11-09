@@ -1,31 +1,9 @@
 {
-  "none": {
-    "kind": "none"
-  },
-  "playbook": {
-    "kind": "controlled",
-    "mode": "playbook"
-  },
-  "random": {
-    "kind": "controlled",
-    "mode": "random"
-  },
-  "recent": {
-    "kind": "controlled",
-    "mode": "recent"
-  },
-  "success_bm25": {
-    "kind": "controlled",
-    "mode": "success_bm25"
-  },
-  "outcome_bm25": {
-    "kind": "controlled",
-    "mode": "outcome_bm25"
-  },
-  "bandit": {
-    "kind": "controlled",
-    "mode": "bandit"
-  },
+  "none": {"kind": "none"},
+  "playbook": {"kind": "controlled", "mode": "playbook"},
+  "random": {"kind": "controlled", "mode": "random"},
+  "recent": {"kind": "controlled", "mode": "recent"},
+  "full_history": {"kind": "controlled", "mode": "full_history"},
   "bm25": {
     "kind": "upstream",
     "backend": "bm25",
@@ -36,25 +14,46 @@
       "memory_dir": "@@MEMORY_DIR@@"
     }
   },
+  "success_bm25": {"kind": "controlled", "mode": "success_bm25"},
+  "outcome_bm25": {"kind": "controlled", "mode": "outcome_bm25"},
+  "bandit": {"kind": "controlled", "mode": "bandit", "params": {"exploration": 1.0}},
+  "contextual_bandit": {"kind": "controlled", "mode": "contextual_bandit", "params": {"exploration": 1.0}},
+  "supervised_writer": {"kind": "controlled", "mode": "supervised_writer"},
+  "reflexion": {"kind": "controlled", "mode": "reflexion"},
+  "expel": {"kind": "controlled", "mode": "expel"},
+  "letta_consolidation": {
+    "kind": "controlled",
+    "mode": "letta_consolidation",
+    "params": {"consolidate_every": 5}
+  },
+  "bayesian_state": {"kind": "controlled", "mode": "bayesian_state"},
+  "evolutionary": {
+    "kind": "evolutionary",
+    "mode": "outcome_bm25",
+    "search": {
+      "population_size": 4,
+      "generations": 2,
+      "modes": ["bm25", "success_bm25", "outcome_bm25", "recent", "full_history"],
+      "top_k_values": [1, 3, 5]
+    }
+  },
   "amem": {
     "kind": "upstream",
     "backend": "amem",
-    "requires": [
-      "DEEPSEEK_API_KEY",
-      "DASHSCOPE_API_KEY"
-    ],
+    "requires": ["EVO_MEM_LLM_BASE_URL", "DASHSCOPE_BASE_URL"],
+    "requires_packages": ["amem"],
     "params": {
       "agent_id": "alfworld",
       "storage_path": "@@MEMORY_DIR@@",
-      "llm_model": "@@MEMORY_MODEL@@",
+      "llm_model": "@@EVO_MEM_LLM_MODEL@@",
       "llm": {
-        "api_key": "@@DEEPSEEK_API_KEY@@",
-        "base_url": "@@DEEPSEEK_BASE_URL@@"
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "base_url": "@@EVO_MEM_LLM_BASE_URL@@"
       },
       "embed": {
         "api_key": "@@DASHSCOPE_API_KEY@@",
         "base_url": "@@DASHSCOPE_BASE_URL@@",
-        "model": "text-embedding-v4"
+        "model": "@@EVO_MEM_EMBED_MODEL@@"
       },
       "search_limit": 3,
       "evo_threshold": 99999
@@ -63,22 +62,20 @@
   "amem_evolving": {
     "kind": "upstream",
     "backend": "amem",
-    "requires": [
-      "DEEPSEEK_API_KEY",
-      "DASHSCOPE_API_KEY"
-    ],
+    "requires": ["EVO_MEM_LLM_BASE_URL", "DASHSCOPE_BASE_URL"],
+    "requires_packages": ["amem"],
     "params": {
       "agent_id": "alfworld",
       "storage_path": "@@MEMORY_DIR@@",
-      "llm_model": "@@MEMORY_MODEL@@",
+      "llm_model": "@@EVO_MEM_LLM_MODEL@@",
       "llm": {
-        "api_key": "@@DEEPSEEK_API_KEY@@",
-        "base_url": "@@DEEPSEEK_BASE_URL@@"
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "base_url": "@@EVO_MEM_LLM_BASE_URL@@"
       },
       "embed": {
         "api_key": "@@DASHSCOPE_API_KEY@@",
         "base_url": "@@DASHSCOPE_BASE_URL@@",
-        "model": "text-embedding-v4"
+        "model": "@@EVO_MEM_EMBED_MODEL@@"
       },
       "search_limit": 3,
       "evo_threshold": 10
@@ -87,36 +84,122 @@
   "reasoning_bank": {
     "kind": "upstream",
     "backend": "reasoning_bank",
-    "requires": [
-      "DEEPSEEK_API_KEY",
-      "DASHSCOPE_API_KEY"
-    ],
+    "requires": ["EVO_MEM_LLM_BASE_URL", "DASHSCOPE_BASE_URL"],
     "params": {
       "bank_path": "@@MEMORY_DIR@@/bank.jsonl",
       "embeddings_path": "@@MEMORY_DIR@@/embeddings.jsonl",
       "topk": 3,
       "ark_batch_config": {
-        "api_key": "@@DEEPSEEK_API_KEY@@",
-        "model": "@@MEMORY_MODEL@@"
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "model": "@@EVO_MEM_LLM_MODEL@@"
       },
       "embedder_config": {
         "api_key": "@@DASHSCOPE_API_KEY@@",
         "base_url": "@@DASHSCOPE_BASE_URL@@",
-        "model": "text-embedding-v4"
+        "model": "@@EVO_MEM_EMBED_MODEL@@"
       }
     }
   },
   "ace": {
     "kind": "upstream",
     "backend": "ace",
-    "requires": [
-      "DEEPSEEK_API_KEY"
-    ],
+    "requires": ["EVO_MEM_LLM_BASE_URL"],
     "params": {
       "playbook_path": "@@MEMORY_DIR@@/playbook.txt",
       "ark_batch_config": {
-        "api_key": "@@DEEPSEEK_API_KEY@@",
-        "model": "@@MEMORY_MODEL@@"
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "model": "@@EVO_MEM_LLM_MODEL@@"
+      }
+    }
+  },
+  "agent_kb": {
+    "kind": "upstream",
+    "backend": "agent_kb",
+    "requires": ["EVO_MEM_LLM_BASE_URL", "DASHSCOPE_BASE_URL"],
+    "requires_packages": ["agent_kb"],
+    "params": {
+      "kb_database_path": "@@MEMORY_DIR@@/agent_kb_database.json",
+      "top_k": 3,
+      "search_weights": {"text": 0.5, "semantic": 0.5},
+      "ark_batch_config": {
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "model": "@@EVO_MEM_LLM_MODEL@@"
+      }
+    }
+  },
+  "awm": {
+    "kind": "upstream",
+    "backend": "agent_workflow_memory",
+    "requires": ["EVO_MEM_LLM_BASE_URL", "DASHSCOPE_BASE_URL"],
+    "requires_packages": ["awm"],
+    "params": {
+      "store_path": "@@MEMORY_DIR@@/awm_store.json",
+      "top_k": 3,
+      "enable_induction": true,
+      "ark_batch_config": {
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "model": "@@EVO_MEM_LLM_MODEL@@"
+      }
+    }
+  },
+  "mem0": {
+    "kind": "upstream",
+    "backend": "mem0",
+    "requires": ["EVO_MEM_LLM_BASE_URL", "DASHSCOPE_BASE_URL"],
+    "requires_packages": ["mem0"],
+    "params": {
+      "llm_config": {
+        "provider": "openai",
+        "config": {
+          "model": "@@EVO_MEM_LLM_MODEL@@",
+          "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+          "openai_base_url": "@@EVO_MEM_LLM_BASE_URL@@",
+          "temperature": 0.0
+        }
+      },
+      "embedder_config": {
+        "provider": "openai",
+        "config": {
+          "model": "@@EVO_MEM_EMBED_MODEL@@",
+          "api_key": "@@DASHSCOPE_API_KEY@@",
+          "openai_base_url": "@@DASHSCOPE_BASE_URL@@"
+        }
+      },
+      "vector_store_config": {
+        "provider": "chroma",
+        "config": {
+          "collection_name": "evomem_alfworld",
+          "path": "@@MEMORY_DIR@@/chroma"
+        }
+      },
+      "history_db_path": "@@MEMORY_DIR@@/history.db"
+    }
+  },
+  "skillweaver": {
+    "kind": "upstream",
+    "backend": "skillweaver",
+    "requires": ["EVO_MEM_LLM_BASE_URL"],
+    "params": {
+      "skills_dir": "@@MEMORY_DIR@@/skills",
+      "ark_batch_config": {
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "model": "@@EVO_MEM_LLM_MODEL@@"
+      }
+    }
+  },
+  "lightweight_memory": {
+    "kind": "upstream",
+    "backend": "lightweight_memory",
+    "requires": ["EVO_MEM_LLM_BASE_URL"],
+    "params": {
+      "store_path": "@@MEMORY_DIR@@/longterm_memory.json",
+      "max_strategic": 30,
+      "max_operational": 30,
+      "top_k": 5,
+      "enable_longterm_provision": true,
+      "ark_batch_config": {
+        "api_key": "@@EVO_MEM_LLM_API_KEY@@",
+        "model": "@@EVO_MEM_LLM_MODEL@@"
       }
     }
   }
