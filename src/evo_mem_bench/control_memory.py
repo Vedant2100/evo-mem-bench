@@ -21,7 +21,31 @@ from typing import Any
 
 import numpy as np
 
-from .base import BaseMemory, MemoryCallStats
+try:
+    from .base import BaseMemory, MemoryCallStats
+except ImportError:
+    class BaseMemory:
+        def __init__(self, memory_type: str, read_only: bool = False):
+            self.memory_type = memory_type
+            self.read_only = read_only
+
+    class MemoryCallStats:
+        def __init__(self, input_tokens=0, output_tokens=0, embedding_tokens=0,
+                     cached_tokens=0, latency=0.0):
+            self.input_tokens = input_tokens
+            self.output_tokens = output_tokens
+            self.embedding_tokens = embedding_tokens
+            self.cached_tokens = cached_tokens
+            self.latency = latency
+
+        def __add__(self, other):
+            return MemoryCallStats(
+                self.input_tokens + other.input_tokens,
+                self.output_tokens + other.output_tokens,
+                self.embedding_tokens + other.embedding_tokens,
+                self.cached_tokens + other.cached_tokens,
+                self.latency + other.latency,
+            )
 
 try:
     from .bm25_adapter import _chunk_text, _format_trajectory, _tokenize
