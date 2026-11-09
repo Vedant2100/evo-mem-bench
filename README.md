@@ -68,3 +68,21 @@ Every run records model/provider configuration (not secrets), pinned upstream co
 - `tests/`: offline correctness checks. GitHub Actions also bootstraps/compiles upstream.
 
 This is an **experiment platform**, not a claim that ALFWorld proves open-ended continual learning. Strong evidence requires held-out gains, competence calibration, proper cost accounting, and replications.
+
+## Memory-necessary positive control (local Qwen)
+
+Before interpreting ALFWorld memory gains or null results, run the companion
+[hidden-rule memory-necessity diagnostic](docs/HIDDEN_RULES.md). It creates
+new parcels requiring station-specific facts revealed only in earlier episodes,
+with oracle, no-memory, irrelevant history, BM25, success filtering, outcome
+labels, a UCB retrieval governor and a local-LLM compressed-memory writer.
+It is intentionally a small single-turn positive control, **not** a replacement
+for the original multi-step EvoMemBench evaluation.
+
+~~~bash
+pip install -e ".[eval,test]"
+python -m evomembench.experiment --dry-run
+python -m evomembench.experiment --model Qwen/Qwen3-32B \
+  --base-url http://127.0.0.1:8000/v1 --worlds 36 --seeds 11,22,33 \
+  --gate --output runs/hidden_rules_01
+~~~
