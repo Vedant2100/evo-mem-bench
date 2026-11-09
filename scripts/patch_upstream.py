@@ -131,7 +131,7 @@ def patch(upstream, adapter):
         '        response = self._post("reset", {"game": game, "world_type": world_type})\n',
         '        response = self._post("reset", {"game": game, "world_type": world_type})\n'
         '        if "error" in response:\n'
-        '            raise RuntimeError(f"ALFWorld server could not reset game {game}: {response.get('error')}")\n',
+        '            raise RuntimeError("ALFWorld reset game %s failed: %s" % (game, response["error"]))\n',
         "expose original server reset error",
     )
     replace_one(
