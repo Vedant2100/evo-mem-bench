@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 from evo_mem_bench.control_memory import ControlledMemory
-from prepare_manifest import CATEGORIES, category, select
+from prepare_manifest import CATEGORIES, category, select, split_train_validation
 from run_experiment import substitution, sanitized, validate_outputs
 from analyze_results import grouped_ci, circular_blocks
 
@@ -31,7 +31,7 @@ def test_playbook_is_procedural_not_true_oracle(tmp_path):
     memory=ControlledMemory(mode="playbook",memory_dir=str(tmp_path))
     c,_=memory.inject(conv())
     assert "cool" in c[0]["content"].lower()
-    assert "Category playbook" in c[0]["content"]
+    assert "category playbook" in c[0]["content"].lower()
     memory.update(conv(),1,1.0)
     assert not (tmp_path/"experience.jsonl").exists()
 
@@ -61,7 +61,7 @@ def test_bandit_learns_and_persists(tmp_path):
     memory=ControlledMemory(mode="bandit",memory_dir=str(tmp_path))
     memory.update(conv(),1,1.0)
     c,_=memory.inject(conv("Please cool an apple"))
-    assert "arm=bm25" in c[0]["content"]
+    assert "adaptive policy selected bm25" in c[0]["content"].lower()
     memory.update(conv(),2,1.0)
     assert memory.counts["bm25"]==1
     fresh=ControlledMemory(mode="bandit",memory_dir=str(tmp_path))
@@ -97,3 +97,15 @@ def test_per_episode_validation_rejects_missing_and_bad(tmp_path):
 def test_block_ci_is_deterministic():
     data={"0":{"category":[1,0,1,0,1,0]},"1":{"category":[0,1,0,1,0,1]}}
     assert grouped_ci(data,draws=100)==grouped_ci(data,draws=100)
+
+
+def test_train_validation_partition_is_disjoint_and_stable():
+    groups = {cat: list(range(i * 100, i * 100 + 20)) for i, cat in enumerate(CATEGORIES)}
+    train, validation = split_train_validation(groups, 3, 7, 4)
+    assert all(len(train[cat]) == 7 for cat in CATEGORIES)
+    assert all(len(validation[cat]) == 4 for cat in CATEGORIES)
+    for cat in CATEGORIES:
+        assert set(train[cat]).isdisjoint(validation[cat])
+        assert train[cat] == split_train_validation(groups, 3, 7, 4)[0][cat]
+    with pytest.raises(ValueError):
+        split_train_validation(groups, 0, None, 3)
