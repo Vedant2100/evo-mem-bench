@@ -571,6 +571,7 @@ def main():
     if worker["api_mode"] == "standard":
         if not env.get("OPENAI_BASE_URL") or not env.get("OPENAI_API_KEY"):
             raise RuntimeError("Set OPENAI_BASE_URL and OPENAI_API_KEY for the local OpenAI-compatible worker")
+        assert_endpoint(env["OPENAI_BASE_URL"], "Worker inference endpoint")
     elif not env.get("DEEPSEEK_API_KEY") or not env.get("BATCH_MODEL"):
         raise RuntimeError("Set DEEPSEEK_API_KEY and BATCH_MODEL for ARK batch worker")
 
