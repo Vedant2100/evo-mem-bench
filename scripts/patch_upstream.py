@@ -89,7 +89,7 @@ def patch_episode_cleanup(evaluator: Path) -> None:
 
 
 def patch_local_ark_utils(path: Path) -> None:
-    replace_one(path, "import json\nimport threading\n", "import json\nimport os\nimport threading\n", "ARK helper os import")
+    ensure_import(path, "import os")
     replacement = r'''class ArkBatchLLM:
     """Local OpenAI-compatible inference when EVO_MEM_LLM_BASE_URL is set; ARK otherwise."""
 
