@@ -11,6 +11,9 @@ dependencies = ["rank-bm25>=0.2.2", "tiktoken>=0.7", "numpy>=1.24", "nltk>=3.8"]
 
 [project.optional-dependencies]
 eval = ["openai>=1.0", "volcengine-python-sdk[ark]", "tqdm>=4.0"]
+methods = ["scikit-learn>=1.4", "python-dotenv>=1.0"]
+mem0 = ["mem0ai>=0.1"]
+lora = ["transformers>=4.48", "trl>=0.15", "peft>=0.14", "datasets>=3.0", "accelerate>=1.0"]
 test = ["pytest>=8.0"]
 
 [tool.setuptools.packages.find]
