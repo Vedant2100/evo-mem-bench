@@ -1,92 +1,98 @@
-# EvoMemBench — controlled memory-learning experiments
+# EvoMemBench — full memory-arm experiment platform
 
-**Research question:** Can a capable, *frozen* agent turn experience from earlier tasks into measurable improvements on later tasks? Which memory mechanisms help, and which merely add distracting context?
+**Research question:** When does experience from earlier tasks improve a capable agent's performance on later tasks, and which parts of the memory pipeline matter: writing, consolidation, retrieval, selection, or applying retrieved information?
 
-This project **reuses the official [EvoMemBench](https://github.com/DSAIL-Memory/EvoMemBench) CROSSEP-EMB ALFWorld evaluator, server, task maps, rewards, and memory adapters**. Upstream is pinned to `3efc221fd8d5f4de7c2dc2022357e600d26325c7`. No replacement simulator or alternative success metric.
+This repository runs the **official EvoMemBench CROSSEP-EMB ALFWorld evaluator**, using its task mappings, environment, reward, agent loop, and upstream memory adapters. The upstream checkout is pinned to 3efc221fd8d5f4de7c2dc2022357e600d26325c7. The experiment adds controlled memory conditions and research extensions without replacing the benchmark.
 
-## Two scientifically distinct protocols
+## The two primary protocols
 
-1. **Original online protocol** (`--plan original`): 200 official test tasks in six categories, sequential memory updates, followed optionally by the original 30 directed source→target read-only transfer comparisons (`--plan transfer`). Seed 0 retains official item ordering. This is **not** an independent held-out test: earlier evaluation episodes become memory for later episodes.
-2. **Held-out protocol** (`--plan heldout`): build memory exclusively on separate official **train** items (0–2419), freeze memory, evaluate on official **test** items (2420–2619). Train/test IDs and task IDs are disjoint. This is an **extension**, not a reproduction of published EvoMemBench results.
+1. **Held-out memory learning** (core, systems, or full plan): build each method's memory on a disjoint subset of the official train mapping; optionally use another disjoint train subset for evolutionary policy selection; freeze memory before evaluating on the official 200-item test mapping. This is the cleanest test of whether prior experience transfers to later held-out tasks.
+2. **Original online stream** (original plan): process the official 200 test items sequentially, updating memory after each episode. This matches the upstream online setting but is not an independent test stream: earlier evaluation episodes become later memory.
 
-No experiment outcome is claimed until complete episode files exist and pass validation.
+The transfer plan adds the 30 directed source-category → target-category comparisons with source memory frozen on target tasks. Report this separately from held-out and online results.
 
-## Implemented methods
+## Memory arms
 
-- **No memory** — matched worker baseline.
-- **Static playbook** — hand-authored category procedure, **not** a true hidden-information oracle. A worker-utilization positive control.
-- **Random / recent history** — equal-cap context controls.
-- **Upstream BM25** — original chunking/retrieval adapter.
-- **Success-only BM25 / outcome-labelled BM25** — custom ablations using the upstream BM25 formatting/chunking.
-- **UCB retrieval bandit** — a lightweight reward-adaptive choice among BM25/recent/random; **not** actor–critic RL.
-- **A-MEM, ReasoningBank, ACE** — official adapters with original configuration switches; optional dependencies and API keys needed.
-- **Other official adapters** (Mem0, AgentKB, AWM, SkillWeaver, etc.) remain in upstream; this project does not falsely claim they have all been validated.
+### Controls and retrieval baselines
+- none — matched worker, no memory.
+- playbook — static hand-authored task-category guidance; a procedural positive control, **not an oracle**.
+- random, recent, full_history — irrelevant/random, most-recent, and all-history context controls.
+- bm25, success_bm25, outcome_bm25 — original BM25, successful episodes only, and success/failure-labelled episodes.
 
-Further methods—evolutionary memory search, supervised memory-writer training, Bayesian belief-state agents, parameter-space LoRA, and actor–critic memory policies—require distinct training/evaluation protocols; see [methods and boundaries](docs/METHODS.md). Do not count them as completed experiments.
+### Learned memory and policy mechanisms
+- supervised_writer — reward-conditioned local LLM writer; writes only lessons supported by successful trajectories. This is not writer-weight fine-tuning.
+- reflexion — prompt-based per-episode reflection over successes and failures.
+- expel — prompt-based extraction of generalizable principles from experience.
+- letta_consolidation — episodic buffer with bounded sleep-time consolidation into semantic notes. Letta-inspired, not a claim to reproduce the Letta product.
+- bayesian_state — structured Beta-Bernoulli posterior over task-family success, paired with a prior successful procedure. It is not a full POMDP state estimator.
+- bandit — non-contextual UCB selection among BM25/recent/random.
+- contextual_bandit — LinUCB selection among BM25/recent/random using task-family and task-verb features.
+- evolutionary — genetic search over retrieval mode and top-k using a disjoint validation split from official training data. The selected policy is frozen before test. It optimizes retrieval policy, not model weights or the contents of memory notes.
 
-## Competence / causal interpretation gate
+### Upstream memory systems
+- amem, amem_evolving
+- reasoning_bank
+- ace
+- agent_kb
+- awm (Agent Workflow Memory)
+- mem0
+- skillweaver
+- lightweight_memory
 
-Before large runs, test **no memory + playbook** with a fixed worker. Flag overall no-memory success below 55%, category success below 30%, or ceiling above 95%. A playbook that fails to improve task performance does *not* demonstrate that learned memory is useless: it may be the wrong guidance or the benchmark may have no memory-sensitive headroom. **ALFWorld has no guaranteed hidden-information dependency**, unlike genuinely personalized or partially observable persistent worlds. If the positive control fails, stop and reconsider the testbed.
+The upstream methods are invoked through their original adapters. Local OpenAI-compatible inference is supported for their memory LLM calls; a separate local embedding endpoint is used by embedding-backed systems. Install optional dependencies only for the systems you intend to run.
 
-The original and held-out protocols must be reported separately. All methods in a comparison use the same worker, inference mode, max rounds, seeds/order, test IDs, and nominal memory-context cap. Upstream-fidelity runs explicitly disable the cap; compare them only to equally uncapped controls.
+### Separate parameter-learning comparison
+Continual LoRA/SFT changes the worker weights and is **not** an external-memory arm. It has a separate data-collection, training, and evaluation path in docs/LORA_TRACK.md. The synthetic hidden-rule oracle is also separate; ALFWorld has no true gold-memory oracle.
 
-## Quick start
+See docs/METHODS.md for the complete method definitions and boundaries, and docs/SCIENTIFIC_PROTOCOL.md for the registered protocol.
 
-```bash
-git clone https://github.com/Vedant2100/evo-mem-bench.git
-cd evo-mem-bench
-bash scripts/bootstrap_upstream.sh
-python -m pip install -e '.[test]'
-pytest -q
-cp .env.example .env
-```
+## Recommended execution order
 
-Set up the ALFWorld server and evaluator according to [docs/SETUP.md](docs/SETUP.md). A local OpenAI-compatible endpoint (e.g. vLLM serving a competent Qwen model) is supported; or choose the upstream DeepSeek ARK batch route. Start the server separately.
+    # 1. Clone and bootstrap the pinned official benchmark.
+    git clone https://github.com/Vedant2100/evo-mem-bench.git
+    cd evo-mem-bench
+    bash scripts/bootstrap_upstream.sh
 
-```bash
-python scripts/run_experiment.py --plan smoke --dry-run
-python scripts/run_experiment.py --plan smoke
-python scripts/run_experiment.py --plan heldout --dry-run
-python scripts/run_experiment.py --plan original --dry-run
-python scripts/run_experiment.py --plan transfer --dry-run
-```
+    # 2. Install the evaluator environment.
+    python -m pip install -e '.[eval,test]'
+    python -m pytest -q
 
-**No expensive experiment is started automatically.** Inspect the dry-run episode counts and worker-call bound before running. The recommended sequence is smoke → competence pilot → held-out core methods → original online reproduction → transfer → expensive adapters.
+    # 3. Install only the optional upstream systems you will compare.
+    bash scripts/install_memory_methods.sh amem agent_kb awm mem0
 
-```bash
-python scripts/analyze_results.py runs/RUN_ID
-```
+    # 4. Check the small plan before spending GPU time.
+    cp .env.example .env
+    python scripts/prepare_manifest.py --validate-only
+    python scripts/run_experiment.py --plan smoke --dry-run
+    python scripts/run_experiment.py --plan competence --dry-run
+    python scripts/run_experiment.py --plan core --dry-run
 
-Every run records model/provider configuration (not secrets), pinned upstream commit, task-map hashes, seed, train/test IDs, raw per-episode JSON, method settings, and per-condition logs. Missing/error episodes invalidate results. An interrupted online memory run must be restarted with fresh storage, not resumed from the upstream JSON cache.
+    # 5. Run the full custom-method and upstream-system matrix only after the gate.
+    python scripts/run_experiment.py --plan full --dry-run
 
-## Files
+See docs/CLUSTER_RUN.md for local vLLM worker/embedding servers, Slurm/Apptainer notes, and a Codex run checklist.
 
-- `configs/`: worker/method/plan configuration.
-- `src/evo_mem_bench/`: compact custom memory-control backend.
-- `scripts/`: bootstrap, patcher, task manifest, runner, and analysis.
-- `docs/`: scientific protocol, compatibility, limitations, setup.
-- `tests/`: offline correctness checks. GitHub Actions also bootstraps/compiles upstream.
+The default full plan uses 20 memory-building tasks and 5 validation tasks per category, then the complete official test set, for three task-order seeds. Adjust the counts and methods explicitly if the compute budget is smaller. Dry-run prints phase counts and an upper bound on worker calls; memory-writer and embedding calls are additional.
 
-This is an **experiment platform**, not a claim that ALFWorld proves open-ended continual learning. Strong evidence requires held-out gains, competence calibration, proper cost accounting, and replications.
+## Soundness guarantees
 
-## Memory-necessary positive control (local Qwen)
+- Each arm/seed/category gets a fresh memory store.
+- Held-out train, validation, and test item IDs are disjoint.
+- Test is read-only in held-out experiments.
+- Evolutionary candidates are selected on validation only; no test outcomes select hyperparameters.
+- Worker model, prompt, temperature, round limit, task IDs, and order seed are held fixed across paired conditions.
+- Memory-only context is capped at the same configured token budget in controlled runs. Original-fidelity uncapped runs must use memory_cap_tokens=0 across every compared arm.
+- The runner uses parallel=1 for sequential memory updates; completed ALFWorld environments are closed in finally.
+- Every condition is validated against per-episode output files. Missing/error episodes invalidate that condition.
+- The runner refuses to reuse output directories. Upstream cached JSON files are not a valid way to resume a memory-learning stream because skipped tasks do not replay memory updates.
+- Raw conversations, exact manifests, method configs, upstream commit, logs, and per-episode metrics are retained. API keys are excluded from run manifests.
 
-Before interpreting ALFWorld memory gains or null results, run the companion
-[hidden-rule memory-necessity diagnostic](docs/HIDDEN_RULES.md). It creates
-new parcels requiring station-specific facts revealed only in earlier episodes,
-with oracle, no-memory, irrelevant history, BM25, success filtering, outcome
-labels, a UCB retrieval governor and a local-LLM compressed-memory writer.
-It is intentionally a small single-turn positive control, **not** a replacement
-for the original multi-step EvoMemBench evaluation.
+## Analyze
 
-~~~bash
-pip install -e ".[eval,test]"
-python -m evomembench.experiment --dry-run
-python -m evomembench.experiment --model Qwen/Qwen3-32B \
-  --base-url http://127.0.0.1:8000/v1 --worlds 36 --seeds 11,22,33 \
-  --gate --output runs/hidden_rules_01
-~~~
+    python scripts/analyze_results.py runs/RUN_ID
 
-## Free Kaggle GPU runner (optional)
+Held-out, online, and transfer results are summarized separately. Paired comparisons use the same item IDs; online uncertainty is treated cautiously because earlier tasks affect later memory.
 
-A GitHub Actions controller can launch the repository's **hidden-rule diagnostic** on a free Kaggle notebook GPU, monitor status every 30 minutes, and collect JSON results. It is **not yet the full ALFWorld evaluator**. GPU launches are explicitly opt-in and require Kaggle credentials stored as GitHub Actions secrets. See [Kaggle setup](docs/KAGGLE.md).
+## Companion positive control
+
+The local hidden-rule diagnostic in docs/HIDDEN_RULES.md checks whether a worker can exploit genuinely hidden information from previous episodes, using an actual oracle arm. It is a single-turn diagnostic, not a substitute for the multi-step ALFWorld benchmark.
