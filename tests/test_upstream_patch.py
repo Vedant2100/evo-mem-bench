@@ -70,6 +70,7 @@ def test_patcher_is_strict_idempotent_and_cluster_local(tmp_path):
         "        f\"Unknown memory_type: {memory_type!r}. \"\n"
     )
     (memory / "_ark_utils.py").write_text(
+        "import json\\nimport threading\\nfrom types import SimpleNamespace\\nfrom typing import List\\n"
         "class ArkBatchLLM:\n"
         "    pass\n"
         "\n"
