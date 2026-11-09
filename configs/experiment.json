@@ -1,0 +1,115 @@
+{
+  "upstream": {
+    "url": "https://github.com/DSAIL-Memory/EvoMemBench.git",
+    "commit": "3efc221fd8d5f4de7c2dc2022357e600d26325c7",
+    "component": "Cross-Episode-Execution/Embodied-AI/CROSSEP-EMB"
+  },
+  "worker": {
+    "api_mode": "standard",
+    "model": "Qwen/Qwen3-32B",
+    "max_rounds": 20,
+    "temperature": null,
+    "memory_cap_tokens": 2048,
+    "port": 36005
+  },
+  "gate": {
+    "minimum_overall_no_memory": 0.55,
+    "minimum_category_no_memory": 0.3,
+    "ceiling_warning_no_memory": 0.95,
+    "playbook_delta_target": 0.05
+  },
+  "plans": {
+    "smoke": {
+      "protocol": "heldout",
+      "train_per_category": 1,
+      "test_per_category": 1,
+      "seeds": [
+        0
+      ],
+      "methods": [
+        "none",
+        "playbook",
+        "random",
+        "bm25"
+      ]
+    },
+    "competence": {
+      "protocol": "heldout",
+      "train_per_category": 5,
+      "test_per_category": 6,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "methods": [
+        "none",
+        "playbook"
+      ]
+    },
+    "heldout": {
+      "protocol": "heldout",
+      "train_per_category": 20,
+      "test_per_category": null,
+      "seeds": [
+        0
+      ],
+      "methods": [
+        "none",
+        "playbook",
+        "random",
+        "recent",
+        "bm25",
+        "success_bm25",
+        "outcome_bm25",
+        "bandit"
+      ]
+    },
+    "original": {
+      "protocol": "online",
+      "test_per_category": null,
+      "seeds": [
+        0
+      ],
+      "methods": [
+        "none",
+        "playbook",
+        "random",
+        "recent",
+        "bm25",
+        "success_bm25",
+        "outcome_bm25",
+        "bandit"
+      ]
+    },
+    "learned": {
+      "protocol": "heldout",
+      "train_per_category": 20,
+      "test_per_category": null,
+      "seeds": [
+        0
+      ],
+      "methods": [
+        "none",
+        "bm25",
+        "amem",
+        "reasoning_bank",
+        "ace"
+      ]
+    },
+    "transfer": {
+      "protocol": "transfer",
+      "test_per_category": null,
+      "seeds": [
+        0
+      ],
+      "methods": [
+        "none",
+        "bm25",
+        "success_bm25",
+        "reasoning_bank"
+      ],
+      "memory_cap_tokens": 0
+    }
+  }
+}

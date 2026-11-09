@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "evo-mem-bench"
+version = "0.2.0"
+description = "Controlled memory learning experiments on the official EvoMemBench ALFWorld evaluator"
+requires-python = ">=3.10"
+dependencies = ["rank-bm25>=0.2.2", "tiktoken>=0.7", "numpy>=1.24", "nltk>=3.8"]
+
+[project.optional-dependencies]
+eval = ["openai>=1.0", "volcengine-python-sdk[ark]", "tqdm>=4.0"]
+test = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "scripts"]

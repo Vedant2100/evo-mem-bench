@@ -1,0 +1,123 @@
+{
+  "none": {
+    "kind": "none"
+  },
+  "playbook": {
+    "kind": "controlled",
+    "mode": "playbook"
+  },
+  "random": {
+    "kind": "controlled",
+    "mode": "random"
+  },
+  "recent": {
+    "kind": "controlled",
+    "mode": "recent"
+  },
+  "success_bm25": {
+    "kind": "controlled",
+    "mode": "success_bm25"
+  },
+  "outcome_bm25": {
+    "kind": "controlled",
+    "mode": "outcome_bm25"
+  },
+  "bandit": {
+    "kind": "controlled",
+    "mode": "bandit"
+  },
+  "bm25": {
+    "kind": "upstream",
+    "backend": "bm25",
+    "params": {
+      "agent_id": "alfworld",
+      "top_k": 10,
+      "chunk_size": 1024,
+      "memory_dir": "@@MEMORY_DIR@@"
+    }
+  },
+  "amem": {
+    "kind": "upstream",
+    "backend": "amem",
+    "requires": [
+      "DEEPSEEK_API_KEY",
+      "DASHSCOPE_API_KEY"
+    ],
+    "params": {
+      "agent_id": "alfworld",
+      "storage_path": "@@MEMORY_DIR@@",
+      "llm_model": "@@MEMORY_MODEL@@",
+      "llm": {
+        "api_key": "@@DEEPSEEK_API_KEY@@",
+        "base_url": "@@DEEPSEEK_BASE_URL@@"
+      },
+      "embed": {
+        "api_key": "@@DASHSCOPE_API_KEY@@",
+        "base_url": "@@DASHSCOPE_BASE_URL@@",
+        "model": "text-embedding-v4"
+      },
+      "search_limit": 3,
+      "evo_threshold": 99999
+    }
+  },
+  "amem_evolving": {
+    "kind": "upstream",
+    "backend": "amem",
+    "requires": [
+      "DEEPSEEK_API_KEY",
+      "DASHSCOPE_API_KEY"
+    ],
+    "params": {
+      "agent_id": "alfworld",
+      "storage_path": "@@MEMORY_DIR@@",
+      "llm_model": "@@MEMORY_MODEL@@",
+      "llm": {
+        "api_key": "@@DEEPSEEK_API_KEY@@",
+        "base_url": "@@DEEPSEEK_BASE_URL@@"
+      },
+      "embed": {
+        "api_key": "@@DASHSCOPE_API_KEY@@",
+        "base_url": "@@DASHSCOPE_BASE_URL@@",
+        "model": "text-embedding-v4"
+      },
+      "search_limit": 3,
+      "evo_threshold": 10
+    }
+  },
+  "reasoning_bank": {
+    "kind": "upstream",
+    "backend": "reasoning_bank",
+    "requires": [
+      "DEEPSEEK_API_KEY",
+      "DASHSCOPE_API_KEY"
+    ],
+    "params": {
+      "bank_path": "@@MEMORY_DIR@@/bank.jsonl",
+      "embeddings_path": "@@MEMORY_DIR@@/embeddings.jsonl",
+      "topk": 3,
+      "ark_batch_config": {
+        "api_key": "@@DEEPSEEK_API_KEY@@",
+        "model": "@@MEMORY_MODEL@@"
+      },
+      "embedder_config": {
+        "api_key": "@@DASHSCOPE_API_KEY@@",
+        "base_url": "@@DASHSCOPE_BASE_URL@@",
+        "model": "text-embedding-v4"
+      }
+    }
+  },
+  "ace": {
+    "kind": "upstream",
+    "backend": "ace",
+    "requires": [
+      "DEEPSEEK_API_KEY"
+    ],
+    "params": {
+      "playbook_path": "@@MEMORY_DIR@@/playbook.txt",
+      "ark_batch_config": {
+        "api_key": "@@DEEPSEEK_API_KEY@@",
+        "model": "@@MEMORY_MODEL@@"
+      }
+    }
+  }
+}

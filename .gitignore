@@ -1,0 +1,10 @@
+.env
+.env.*
+!.env.example
+vendor/
+runs/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.venv/
+.DS_Store
