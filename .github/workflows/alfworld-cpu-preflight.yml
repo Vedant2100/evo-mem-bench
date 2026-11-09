@@ -95,6 +95,19 @@ jobs:
               "no_model_calls": True,
               "no_gpu": True,
           }
+          # Reproduce the original failure mode without using any GPU:
+          # 16 prior instances had accumulated before POST /reset failed.
+          closed = post("/close", {"id":created["id"]})
+          assert closed.get("closed"), closed
+          for i in range(24):
+              item = [2423,2426,2422,2425,2420,2431][i % 6]
+              opened = post("/create")
+              assert "id" in opened and "error" not in opened, opened
+              state = post("/reset", {"id":opened["id"],"game":item,"world_type":"Text"})
+              assert "observation" in state and "error" not in state, (i, state)
+              ended = post("/close", {"id":opened["id"]})
+              assert ended.get("closed"), (i,ended)
+          report["closed_environment_stress_episodes"] = 25
           print(json.dumps(report, indent=2))
           open("alfworld-preflight.json","w").write(json.dumps(report,indent=2)+"\n")
           PY
