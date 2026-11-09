@@ -8,7 +8,7 @@
     "api_mode": "standard",
     "model": "Qwen/Qwen3-32B",
     "max_rounds": 20,
-    "temperature": null,
+    "temperature": 0.0,
     "memory_cap_tokens": 2048,
     "port": 36005
   },
@@ -22,94 +22,162 @@
     "smoke": {
       "protocol": "heldout",
       "train_per_category": 1,
+      "validation_per_category": 1,
       "test_per_category": 1,
-      "seeds": [
-        0
-      ],
-      "methods": [
-        "none",
-        "playbook",
-        "random",
-        "bm25"
-      ]
+      "seeds": [0],
+      "methods": ["none", "playbook", "random", "bm25"]
     },
     "competence": {
       "protocol": "heldout",
       "train_per_category": 5,
       "test_per_category": 6,
-      "seeds": [
-        0,
-        1,
-        2
-      ],
+      "seeds": [0, 1, 2],
+      "methods": ["none", "playbook"]
+    },
+    "core": {
+      "protocol": "heldout",
+      "train_per_category": 20,
+      "validation_per_category": 5,
+      "test_per_category": null,
+      "seeds": [0, 1, 2],
       "methods": [
         "none",
-        "playbook"
+        "playbook",
+        "random",
+        "recent",
+        "full_history",
+        "bm25",
+        "success_bm25",
+        "outcome_bm25",
+        "bandit",
+        "contextual_bandit",
+        "supervised_writer",
+        "reflexion",
+        "expel",
+        "letta_consolidation",
+        "bayesian_state",
+        "evolutionary"
       ]
     },
-    "heldout": {
+    "systems": {
       "protocol": "heldout",
       "train_per_category": 20,
       "test_per_category": null,
-      "seeds": [
-        0
-      ],
+      "seeds": [0, 1, 2],
       "methods": [
         "none",
-        "playbook",
-        "random",
-        "recent",
         "bm25",
-        "success_bm25",
-        "outcome_bm25",
-        "bandit"
-      ]
-    },
-    "original": {
-      "protocol": "online",
-      "test_per_category": null,
-      "seeds": [
-        0
-      ],
-      "methods": [
-        "none",
-        "playbook",
-        "random",
-        "recent",
-        "bm25",
-        "success_bm25",
-        "outcome_bm25",
-        "bandit"
+        "amem",
+        "amem_evolving",
+        "reasoning_bank",
+        "ace",
+        "agent_kb",
+        "awm",
+        "mem0",
+        "skillweaver",
+        "lightweight_memory"
       ]
     },
     "learned": {
       "protocol": "heldout",
       "train_per_category": 20,
       "test_per_category": null,
-      "seeds": [
-        0
-      ],
+      "seeds": [0, 1, 2],
       "methods": [
         "none",
         "bm25",
         "amem",
+        "amem_evolving",
         "reasoning_bank",
-        "ace"
+        "ace",
+        "agent_kb",
+        "awm"
+      ]
+    },
+    "full": {
+      "protocol": "heldout",
+      "train_per_category": 20,
+      "validation_per_category": 5,
+      "test_per_category": null,
+      "seeds": [0, 1, 2],
+      "methods": [
+        "none",
+        "playbook",
+        "random",
+        "recent",
+        "full_history",
+        "bm25",
+        "success_bm25",
+        "outcome_bm25",
+        "bandit",
+        "contextual_bandit",
+        "supervised_writer",
+        "reflexion",
+        "expel",
+        "letta_consolidation",
+        "bayesian_state",
+        "evolutionary",
+        "amem",
+        "amem_evolving",
+        "reasoning_bank",
+        "ace",
+        "agent_kb",
+        "awm",
+        "mem0",
+        "skillweaver",
+        "lightweight_memory"
+      ]
+    },
+    "original": {
+      "protocol": "online",
+      "test_per_category": null,
+      "seeds": [0, 1, 2],
+      "methods": [
+        "none",
+        "playbook",
+        "random",
+        "recent",
+        "full_history",
+        "bm25",
+        "success_bm25",
+        "outcome_bm25",
+        "bandit",
+        "contextual_bandit",
+        "supervised_writer",
+        "reflexion",
+        "expel",
+        "letta_consolidation",
+        "bayesian_state",
+        "amem",
+        "reasoning_bank",
+        "ace",
+        "agent_kb",
+        "awm",
+        "mem0",
+        "skillweaver",
+        "lightweight_memory"
       ]
     },
     "transfer": {
       "protocol": "transfer",
       "test_per_category": null,
-      "seeds": [
-        0
-      ],
+      "seeds": [0],
       "methods": [
         "none",
         "bm25",
         "success_bm25",
-        "reasoning_bank"
+        "reasoning_bank",
+        "agent_kb",
+        "awm"
       ],
       "memory_cap_tokens": 0
+    },
+    "collect": {
+      "protocol": "collect",
+      "train_per_category": 50,
+      "test_per_category": null,
+      "seeds": [0],
+      "methods": ["none"]
     }
   }
 }
