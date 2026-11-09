@@ -19,7 +19,8 @@ class EpisodeDataset(Dataset):
         return len(self.rows)
 
     def __getitem__(self, index):
-        return self.rows[index]
+        row = self.rows[index]
+        return {key: row[key] for key in ("input_ids", "attention_mask", "labels")}
 
 
 def encode_episodes(tokenizer, records, max_length):
