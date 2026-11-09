@@ -109,3 +109,17 @@ def test_train_validation_partition_is_disjoint_and_stable():
         assert train[cat] == split_train_validation(groups, 3, 7, 4)[0][cat]
     with pytest.raises(ValueError):
         split_train_validation(groups, 0, None, 3)
+
+
+def test_official_task_category_overrides_ambiguous_language(tmp_path):
+    category_name = "pick_two_obj_and_place"
+    memory = ControlledMemory(
+        mode="playbook",
+        task_category=category_name,
+        memory_dir=str(tmp_path),
+    )
+    ambiguous_task = "Your task is to put a mug and a plate on the dining table"
+    injected, _ = memory.inject(conv(ambiguous_task))
+    assert "both requested objects" in injected[0]["content"]
+    record = memory._record(conv(ambiguous_task), 99, 1.0)
+    assert record["category"] == category_name
