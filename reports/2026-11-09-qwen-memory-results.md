@@ -50,13 +50,43 @@ The first free GitHub Actions setup trial failed because the original setup.sh c
 - Official test task item 2420 reset successfully, exposing 26 admissible actions.
 - This preflight **did not run model inference**.
 
-## Multi-step ALFWorld model pilot
+## Multi-step ALFWorld model pilot — actual partial results
 
-A separate bounded experimental workflow connects the original GitHub Actions CPU ALFWorld environment with a locally served Qwen2.5-7B on Modal T4 via remote method calls, using the original eval_one evaluator and original reward. Planned comparison: no-memory, fixed playbook, and BM25; 3 categories x 2 test tasks x 3 methods, max 12 action rounds.
+The original ALFWorld evaluator on GitHub CPU called Qwen2.5-7B-Instruct
+on Modal T4 (4-bit NF4, greedy decoding) for official 12-round episodes.
+The upstream dataset and evaluator were used; only the worker was remote.
 
-- [Multi-step ALFWorld experiment workflow](https://github.com/Vedant2100/role-work-forge-artifacts/actions/runs/42589124605)
+[Original ALFWorld experiment with 15 saved episodes](https://github.com/Vedant2100/role-work-forge-artifacts/actions/runs/42590248253)
+[Complete, inspectable per-episode raw traces](https://github.com/Vedant2100/role-work-forge-artifacts/tree/main/hackathons/2026-11/results/evo-original-alfworld-42590248253)
 
-Scores remain **unverified here** pending the run's persisted results. This is a capability pilot and must not be represented as the full 200-task, 20-round, 30-transfer-pair original-paper comparison.
+| Method | Successes / completed | Caveat |
+|---|---:|---|
+| No memory | **3/6 = 50.0%** | All six tasks complete |
+| Fixed category playbook | **5/6 = 83.3%** | Static instructions, not learned cross-episode memory |
+| BM25 retrieval | **2/3 = 66.7%** | Only three episodes completed; not a matched six-task comparison |
+
+The fixed playbook rescued task IDs **2426** (place tomato in microwave)
+and **2425** (clean sponge, place on shelf); it preserved all three
+no-memory successes. On the three completed BM25 task IDs (2423,
+2426, 2422), no-memory achieved 2/3, BM25 achieved 2/3, and the static
+playbook achieved 3/3. There is **no measured retrieval advantage**
+from the completed BM25 comparisons.
+
+**Exact blocker:** After 15 completed episodes, the sixteenth game's
+POST /reset returned a response missing an observation, raising
+KeyError('observation') in the client. The upstream server keeps game
+instances in memory and returns error payloads with HTTP 200 without
+automatically releasing finished games. The underlying server
+exception was not logged, so resource exhaustion is a plausible,
+not yet proven cause. A patch adds explicit POST /close cleanup and
+exposes server errors. A 25-reset CPU-only stress validation must
+pass before resuming the three unfinished BM25 tasks. Existing
+results and memory banks are preserved rather than recomputed.
+
+**Limitations:** Six official ALFWorld tasks, 12 action rounds rather
+than 20, and a nonlearned static playbook. Neither statistical
+significance nor generality can be established. This is not the
+full 200-task or all-pairs transfer experiment.
 
 ## Remaining scientific work
 
