@@ -18,9 +18,9 @@
   "outcome_bm25": {"kind": "controlled", "mode": "outcome_bm25"},
   "bandit": {"kind": "controlled", "mode": "bandit", "params": {"exploration": 1.0}},
   "contextual_bandit": {"kind": "controlled", "mode": "contextual_bandit", "params": {"exploration": 1.0}},
-  "supervised_writer": {"kind": "controlled", "mode": "supervised_writer"},
-  "reflexion": {"kind": "controlled", "mode": "reflexion"},
-  "expel": {"kind": "controlled", "mode": "expel"},
+  "supervised_writer": {"kind": "controlled", "mode": "supervised_writer", "requires": ["EVO_MEM_LLM_BASE_URL"]},
+  "reflexion": {"kind": "controlled", "mode": "reflexion", "requires": ["EVO_MEM_LLM_BASE_URL"]},
+  "expel": {"kind": "controlled", "mode": "expel", "requires": ["EVO_MEM_LLM_BASE_URL"]},
   "letta_consolidation": {
     "kind": "controlled",
     "mode": "letta_consolidation",
