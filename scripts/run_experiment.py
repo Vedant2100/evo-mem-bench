@@ -119,6 +119,7 @@ def config_file(
         params = {
             "mode": spec["mode"],
             "memory_dir": str(memory_dir),
+            "task_category": category,
             "top_k": 10,
             "chunk_size": 1024,
             "max_context_tokens": variables["MEMORY_CAP"],
