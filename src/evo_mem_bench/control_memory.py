@@ -204,6 +204,7 @@ class ControlledMemory(BaseMemory):
         self,
         read_only: bool = False,
         mode: str = "random",
+        task_category: str | None = None,
         memory_dir: str = "./storage",
         top_k: int = 5,
         chunk_size: int = 1024,
@@ -224,7 +225,10 @@ class ControlledMemory(BaseMemory):
         if consolidate_every < 1:
             raise ValueError("consolidate_every must be at least one")
 
+        if task_category is not None and task_category not in CATEGORIES:
+            raise ValueError(f"Unknown task_category {task_category!r}")
         self.mode = mode
+        self.task_category = task_category
         self.memory_dir = Path(memory_dir)
         self.bank_path = self.memory_dir / "experience.jsonl"
         self.policy_path = self.memory_dir / "bandit_policy.json"
@@ -278,6 +282,11 @@ class ControlledMemory(BaseMemory):
         if len(conversation) >= 3:
             return str(conversation[2].get("content") or "")
         return ""
+
+    def _category(self, observation: str) -> str:
+        # The runner knows the official task category from the hashed mapping.
+        # Prefer that ground-truth label to brittle natural-language heuristics.
+        return self.task_category or category_from_observation(observation)
 
     @staticmethod
     def _strategy(conversation: list[dict]) -> str:
@@ -392,7 +401,7 @@ class ControlledMemory(BaseMemory):
         return [records[i] for i in indices[:self.top_k]]
 
     def _context(self, query: str) -> np.ndarray:
-        category = category_from_observation(query)
+        category = self._category(query)
         category_bits = [float(category == name) for name in CATEGORIES]
         task = query.lower()
         keyword_bits = [
@@ -506,7 +515,7 @@ class ControlledMemory(BaseMemory):
             return conversation, MemoryCallStats()
         query = self._task(conversation)
         if self.mode == "playbook":
-            memory_text = PLAYBOOK[category_from_observation(query)]
+            memory_text = PLAYBOOK[self._category(query)]
             label = "Static category playbook (procedural positive control; not oracle memory)"
         elif self.mode == "bayesian_state":
             memory_text = self._inject_bayesian(query)
@@ -535,7 +544,7 @@ class ControlledMemory(BaseMemory):
         return {
             "item_id": None if data_idx is None else str(data_idx),
             "task": task,
-            "category": category_from_observation(task),
+            "category": self._category(task),
             "reward": None if reward is None else float(reward),
             "success": bool(success),
             "outcome": "success" if success else "failure",
