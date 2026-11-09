@@ -1,26 +1,90 @@
 # Registered experimental protocol
 
-**Question:** Does persistent external memory improve future ALFWorld task success conditional on sufficient worker competence?
+## Research question
 
-**Official evaluation sets:** 2,420 train mapping items, 200 test mapping items, six task types. Official tasks, reward, evaluator, and action budget are not redefined.
+Does persistent external memory improve later ALFWorld task success when the worker is competent enough to use it? Which intervention is responsible: storing raw experience, filtering failures, writing concise lessons, consolidating episodes, retrieving relevant items, selecting a retrieval policy, or adapting the worker weights?
 
-**Tracks:**
-- `heldout`: memory may update only on the *official train* mapping. It is frozen during all official test tasks. Train/test item IDs are disjoint. In this track, the first test task may already benefit from pretraining memory.
-- `online`: sequential official test stream, with update after each episode. Matches upstream self-evolution setup, but the test stream is also the experience source.
-- `transfer`: online source-category bank followed by five frozen cross-category test runs per source. The target task IDs recur under multiple source memories; they are not independent datasets.
+## Official benchmark and splits
 
-**Primary outcome:** final reward >=1.0. Secondary: mean reward, worker API tokens, memory API tokens (where available), rounds, latency, category results, and learning curves.
+Use the pinned upstream CROSSEP-EMB ALFWorld task maps, environment, action parser, reward, worker prompt, and evaluation loop. The official train mapping contains 2,420 items (IDs 0–2419); the official test mapping contains 200 items (IDs 2420–2619) across six task categories. The mapping files are hash-checked at run creation.
 
-**Competence flags (specified before full experiments):** under 55% no-memory overall, under 30% for a task category, or >95% no-memory ceiling by category. Playbook must be checked separately; absence of playbook gain is inconclusive about a true oracle. If a weak worker cannot solve tasks, do not attribute failures to memory.
+The standard held-out plan creates three disjoint partitions:
+- **Memory-build train:** default 20 tasks per category.
+- **Policy-selection validation:** default 5 additional official-train tasks per category, used only by the evolutionary retrieval-policy arm.
+- **Final test:** all 200 official test tasks, read-only for every memory arm.
 
-**Paired inference:** same test IDs and seed/order per method, compare against that seed's no-memory control. For online streams, memory-induced dependence means independent-episode confidence intervals are overconfident; use category-block bootstrap and additional order seeds. With one seed intervals are descriptive only. For heldout, also repeat independent memory-building streams; seed label includes sampling/order.
+For seed 0, the official order is retained within each category. Other seeds deterministically shuffle the task order and memory/validation samples. Train, validation, and test item IDs are checked for disjointness. All task IDs, seed-specific selections, and source mapping hashes are stored in the manifest.
 
-**Leakage audit:** memory stores are unique to condition/seed/source. In heldout, test task IDs must never enter a writable memory store; in transfer, frozen source store must not be updated on the target. No full-test optimization of memory-generator prompts or retrieval settings. Train and test mapping game IDs are distinct, but underlying scene/object structures can recur; this is related-distribution transfer, not entirely unseen-world generalization.
+The default full plan uses three order/memory seeds. A single seed is a pilot, not a robust replication.
 
-**Oracle limitation:** static playbook is a positive control for procedural guidance, not a gold memory derived from previously hidden information. ALFWorld may reward procedural reuse without making historical memory necessary. Strong claims of "learning from experience" need heldout learning-curve improvements plus domain-aware causal diagnostics.
+## Protocol tracks
 
-**Original comparability:** seed 0 preserves ordered official test IDs and upstream memory adapters. For published-method fidelity set `memory_cap_tokens=0` (no context cap) and matched worker across no-memory and memory. The controlled track has a 2048-token memory-only cap; it is **not** an exact published-condition reproduction. Different worker or provider is also a reproduction extension. We never present those as the authors' original results.
+### Held-out memory learning
+For each method, seed, and task category:
+1. Create a fresh independent memory store.
+2. Run the memory-build train subset sequentially, updating memory after each completed task.
+3. For the evolutionary method only, evaluate candidate retrieval policies read-only on the separate validation subset. Select the best by validation success, breaking ties by lower injected-context token count.
+4. Freeze the chosen memory store and policy.
+5. Evaluate the complete official test set read-only.
 
-**Stopping rule:** after a small smoke and competence pilot, do not spend on A-MEM/ReasoningBank/ACE/full transfer if model competency is inadequate or memory-relevant headroom is unsubstantiated. Negative pilot result should be reported as limited evidence, not erased.
+No test episode can update memory or select a configuration. The baseline no-memory and static playbook conditions are evaluated on the same test IDs.
 
-**Costs:** dry-run prints source and target episodes and an upper bound on agent calls; generator/embedding calls can exceed that and must be budgeted separately. All outputs include complete configurations, credentials excluded.
+### Original online stream
+Run the official 200 test tasks sequentially per category, updating memory after each task. Earlier test-stream outcomes may influence later tasks by design. This matches the online adaptation structure, but it is **not** an independent held-out test. Do not combine it with held-out estimates.
+
+### Cross-category transfer
+For each source category, build a memory bank from its sequential online stream. Then run each of the five other target categories with that source memory frozen. There are 6 × 5 = 30 directed source→target pairs. The same target test tasks recur across multiple source conditions; those comparisons are paired, not independent datasets.
+
+### Continual LoRA/SFT
+This is a separate parameter-learning intervention. Collect successful worker trajectories only from official train tasks, fine-tune a LoRA adapter, and evaluate that adapter on official test tasks with no external memory. Do not report it as a memory-system arm or mix its score into the memory-backend analysis.
+
+## Methods
+
+See docs/METHODS.md for each arm's exact implementation. The ALFWorld matrix includes no-memory, static playbook, random/recent/full history, BM25 and outcome-filtered retrieval, non-contextual UCB, contextual LinUCB, reward-supervised LLM writing, Reflexion-style reflection, ExpeL-style principle extraction, Letta-style sleep consolidation, Bayesian task-family state, validation-only evolutionary retrieval-policy search, and the selected official upstream adapters (A-MEM, ReasoningBank, ACE, AgentKB, AWM, Mem0, SkillWeaver, Lightweight Memory).
+
+The true oracle is only available in the companion hidden-rule synthetic diagnostic. The ALFWorld playbook is a static procedural positive control, not gold memory.
+
+## Controls and competence gate
+
+Before full runs, compare no memory and static playbook using the same worker and decoding. Predeclared diagnostic flags:
+- no-memory overall success below 55%;
+- any task category below 30%;
+- no-memory ceiling above 95%.
+
+If the worker is weak, memory null results may reflect insufficient agent capability. If the playbook does not improve performance, this does not prove that memory is useless: the playbook may be inadequate, and ALFWorld does not guarantee that historical memory is necessary. Use the hidden-rule positive control to separately verify that the worker can apply genuinely hidden facts when exposed.
+
+The pilot gate is a stop-and-review criterion, not a significance test. Report raw rates and uncertainty; do not silently drop a weak category.
+
+## Outcomes and cost accounting
+
+**Primary outcome:** binary success, defined by the official environment reward >= 1.0.
+
+**Secondary outcomes:** mean official reward, success by category, success by task order/learning curve, worker prompt/completion tokens, memory-writer prompt/completion tokens, embedding tokens, memory-context tokens, action rounds, environment latency, LLM-only latency, memory-update/retrieval latency.
+
+The evaluator reports upstream adapter usage fields. Some upstream adapters count tokens by estimates; others report API usage. Label estimates explicitly and do not treat them as provider-billed totals. For local vLLM, usage fields are model-reported tokens, not a dollar invoice.
+
+## Fairness and leakage controls
+
+- Identical worker checkpoint/model ID, system prompt, action parser, decoding temperature, max rounds, task IDs, and order seed within each paired comparison.
+- Independent fresh memory store for every arm × seed × category.
+- Held-out test is read-only. Evolutionary candidate policies are read-only on validation and selected without test results.
+- The injected memory suffix is capped independently of the original task prompt. Controlled plans default to 2,048 memory tokens. For uncapped upstream-fidelity comparisons, set the cap to zero for **all** compared arms.
+- The online track updates from prior test-stream episodes by design; its results are labeled online.
+- Memory stores are category-specific in the primary track. Cross-category transfer is a separate experiment.
+- The environment is sequential (parallelism one) so an episode's update is available only to later episodes. Each environment is explicitly closed in a finally block.
+- The runner rejects an existing output directory. Upstream's cached per-episode JSON cannot safely resume a memory-learning run because a cached episode is skipped without replaying its memory update.
+- Any missing, malformed, or errored episode invalidates that condition. Do not treat failed setup as zero success.
+
+## Statistical analysis
+
+Use paired differences against no memory on identical task IDs within each seed and category. Report raw numerators/denominators and category-level effects. For online streams, earlier outcomes alter later memory; ordinary independent-episode confidence intervals are overconfident. Use category/order-block resampling and multiple task-order seeds. With one seed, intervals are descriptive only.
+
+Held-out runs should report variation across memory-building/order seeds. For transfer, report each of the 30 source→target pairs and account for repeated target items when summarizing uncertainty.
+
+## Cost and stopping
+
+Dry-run prints task episodes and an upper bound on worker calls (episodes × max rounds). Memory writer and embedding calls are additional and must be budgeted separately. Run smoke → competence → core → upstream systems → original online → transfer. Do not launch the full plan until the small gates and all selected adapter smoke tests pass.
+
+## Reproducibility record
+
+Every run stores repository and pinned-upstream commit hashes, worker/memory model identifiers, temperature, context cap, seeds, task IDs, mapping hashes, method configuration, selected evolutionary policy, raw per-episode JSON and conversations, logs, and completion validation. API keys are excluded. A run is complete only when every expected episode exists and passes validation.
