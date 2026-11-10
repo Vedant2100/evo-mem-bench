@@ -1,0 +1,16 @@
+2026-11-10 07:05:11 chain start
+2026-11-10 07:05:13 preflight ok
+2026-11-10 07:16:38 restart: flashinfer sampler JIT failed; disabled
+2026-11-10 07:16:46 chain start
+2026-11-10 07:16:47 preflight ok
+2026-11-10 07:20:28 vLLM 32B-AWQ ready (TP=2, thinking off)
+2026-11-10 07:36:20 smoke ok: runs/20261110T152053Z_557dc2b
+2026-11-10 08:52:54 competence gate: {"none_overall_mean": 0.3333333333333333, "weak_categories(warning)": ["pick_clean_then_place_in_recep", "pick_cool_then_place_in_recep", "pick_heat_then_place_in_recep"]} (runs/20261110T153620Z_4ebc3e7)
+2026-11-10 08:52:54 STOPPED: competence gate failed (no-memory overall outside 55-95%); screen NOT run
+2026-11-10 10:11:35 chain2 start (max_rounds=40)
+2026-11-10 10:12:16 preflight ok
+2026-11-10 10:15:57 vLLM 32B-AWQ ready (TP=2, thinking off)
+2026-11-10 12:11:39 chain3 start: waiting for 40-round competence job (pid 281375)
+2026-11-10 12:19:19 competence gate (40-round, floor 40% per Amendment 2): {"none_overall_mean": 0.5092592592592593, "weak_categories(warning)": ["pick_clean_then_place_in_recep", "pick_cool_then_place_in_recep", "pick_heat_then_place_in_recep"]} (runs/20261110T181557Z_3c400d6)
+2026-11-10 12:19:19 reduced screen started (A pid 424428, B pid 424429)
+2026-11-10 12:40:12 stream C (RL-style bandits) started
