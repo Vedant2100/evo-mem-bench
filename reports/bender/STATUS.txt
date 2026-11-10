@@ -18,3 +18,6 @@
 2026-11-10 13:37:20 stream C (RL-style bandits) started
 2026-11-10 13:37:20 DONE(C): exit 2
 2026-11-10 13:37:50 stream C (RL-style bandits, retry on port 36118) started
+2026-11-10 14:52:14 screen A analyzed: runs/20261110T201919Z_6f34769
+2026-11-10 14:52:14 screen B analyzed: runs/20261110T201920Z_c9a98d1
+2026-11-10 14:52:14 DONE: reduced screen exit codes A=0 B=0 (missing episodes are NOT zero-success)
