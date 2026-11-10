@@ -35,3 +35,6 @@ User needs a verdict by 15:30 on whether RL-trained memory writers are worth pur
 - Competence floor for this run lowered from 55% to 40% no-memory overall (ceiling stays 95%), because the question is headroom for memory, not worker competence. The 55% floor is NOT met if no-memory is 40-55%; the write-up must say so.
 - Power: 36 test tasks per method detects only very large gaps (~25+ points). Output is a headroom/sensitivity assessment, not a ranking, and does NOT test RL-trained memory directly.
 - Pre-registered bar from the design (+15 over none, +10 over playbook, McNemar p<0.01, 4 of 6 types) cannot be met at this sample size; it is retained for the later confirm stage.
+
+## Amendment 3 (2026-11-10 12:45, before results): add RL-style arms
+User pointed out the reduced screen (Amendment 2) omitted the repo's reinforcement-learning-style methods. Added Stream C: none, bandit (UCB over bm25/recent/random), contextual_bandit (LinUCB), same 6 train + 6 test per category, seed 0, so none is paired with the same tasks. Not included: `evolutionary` (needs a validation search; too slow for the 15:30 deadline). Caveat: with only 36 training episodes a bandit gets few updates, so a null result is weak evidence against bandits; it is not a test of RL-trained weights (the LoRA track is behavioral cloning, also not run).
