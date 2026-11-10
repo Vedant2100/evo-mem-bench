@@ -61,3 +61,18 @@ The chore: **"put a clean tomato on the side table"**. This is one of six held-b
 - Across the six tasks of this kind, reflection completed **4 of 6**.
 
 This is one chore type with six tasks, so it shows what reflection can do, not how often it will.
+
+## One example for each row of the table
+
+All of these use the same chore: **"put a clean tomato on the side table"**. The "clean something" chore type has 6 test tasks, and the last column is how each setup did on all 6.
+
+| Setup | What the helper was given before starting | Result on the tomato chore | Result on all 6 "clean something" tasks |
+|---|---|---|---|
+| No memory | Nothing. | Failed. It took the tomato from the fridge, skipped the cleaning, put it on the table, then got stuck. | 0 of 6 |
+| Fixed hint sheet | One sentence: "Take the target object, clean it using the appropriate sink or faucet, retrieve it, then place it in the requested receptacle." | Succeeded. | 5 of 6 |
+| Retrieval | Full records of earlier similar attempts (for example, an earlier apple-cleaning try), pasted in as they happened. | Succeeded. | 1 of 6 |
+| Reflection | Short lessons it wrote about its own practice attempts, such as "clean at the sink basin, not on a countertop". | Succeeded in 7 turns. | 4 of 6 |
+| Letta-style note writer | A running set of notes, for example "if the fridge is closed, open it to check", and "find it, clean it in the sink, then place it". | Succeeded. | 2 of 6 |
+| Supervised note writer | A short to-do list from a past attempt: "Find the apple and take it. Clean the apple using the sinkbasin. Put the clean apple on the diningtable." | Succeeded. | 1 of 6 |
+
+What the example shows: every memory setup got the tomato right, because even a one-line reminder to clean it first was enough. What it hides is that the setups differ a lot across the other five tasks. On this chore type the plain hint sheet did better than the more elaborate methods, and reflection's advantage showed up in the other chore types. This is one chore type with six tasks per setup, so it is an illustration, not a ranking.
