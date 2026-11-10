@@ -7,7 +7,7 @@
   "worker": {
     "api_mode": "standard",
     "model": "Qwen/Qwen3-32B",
-    "max_rounds": 20,
+    "max_rounds": 40,
     "temperature": 0.0,
     "memory_cap_tokens": 2048,
     "port": 36005

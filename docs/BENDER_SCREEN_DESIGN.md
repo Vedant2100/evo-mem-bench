@@ -25,3 +25,6 @@ Status: exploratory screen, not a strict-official replication. Goal: find where 
 
 ## Environment status
 Eval venv (34 tests pass), ALFWorld server venv + 5,234 games, vLLM 0.31.0 (cu130, driver supports CUDA 13.3) installed. Disk is tight: / ~54 GB free and shared.
+
+## Amendment 1 (2026-11-10, user decision): max_rounds 20 -> 40
+Reason: Qwen3-8B and Qwen3-32B-AWQ both scored ~33-35% no-memory in the competence gate; pick_heat/pick_cool/pick_clean hit the 20-round cap while still searching receptacles one by one (confirmed by reading a pick_heat trajectory). Raising the cap changes the protocol: results are not comparable to the upstream 20-round setting. vLLM max-model-len raised 16384 -> 32768 to fit longer episodes. The 55-95% gate is unchanged; if it fails again the chain stops. 20-round gate results (8B, 32B) are kept as records.
