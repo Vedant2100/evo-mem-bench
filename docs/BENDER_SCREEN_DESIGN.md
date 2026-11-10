@@ -28,3 +28,10 @@ Eval venv (34 tests pass), ALFWorld server venv + 5,234 games, vLLM 0.31.0 (cu13
 
 ## Amendment 1 (2026-11-10, user decision): max_rounds 20 -> 40
 Reason: Qwen3-8B and Qwen3-32B-AWQ both scored ~33-35% no-memory in the competence gate; pick_heat/pick_cool/pick_clean hit the 20-round cap while still searching receptacles one by one (confirmed by reading a pick_heat trajectory). Raising the cap changes the protocol: results are not comparable to the upstream 20-round setting. vLLM max-model-len raised 16384 -> 32768 to fit longer episodes. The 55-95% gate is unchanged; if it fails again the chain stops. 20-round gate results (8B, 32B) are kept as records.
+
+## Amendment 2 (2026-11-10 12:15, written BEFORE gate/screen results): deadline-sized screen
+User needs a verdict by 15:30 on whether RL-trained memory writers are worth pursuing. The 10-method screen cannot finish by then, so:
+- Reduced screen, 1 seed, 6 train + 6 test tasks per category. Stream A: none, playbook, bm25, reflexion. Stream B: none, letta_consolidation, supervised_writer. (none is in both streams as a paired baseline.)
+- Competence floor for this run lowered from 55% to 40% no-memory overall (ceiling stays 95%), because the question is headroom for memory, not worker competence. The 55% floor is NOT met if no-memory is 40-55%; the write-up must say so.
+- Power: 36 test tasks per method detects only very large gaps (~25+ points). Output is a headroom/sensitivity assessment, not a ranking, and does NOT test RL-trained memory directly.
+- Pre-registered bar from the design (+15 over none, +10 over playbook, McNemar p<0.01, 4 of 6 types) cannot be met at this sample size; it is retained for the later confirm stage.
