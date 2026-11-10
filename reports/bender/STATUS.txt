@@ -14,3 +14,4 @@
 2026-11-10 12:19:19 competence gate (40-round, floor 40% per Amendment 2): {"none_overall_mean": 0.5092592592592593, "weak_categories(warning)": ["pick_clean_then_place_in_recep", "pick_cool_then_place_in_recep", "pick_heat_then_place_in_recep"]} (runs/20261110T181557Z_3c400d6)
 2026-11-10 12:19:19 reduced screen started (A pid 424428, B pid 424429)
 2026-11-10 12:40:12 stream C (RL-style bandits) started
+2026-11-10 13:10:20 DONE(C): exit 1
