@@ -17,10 +17,11 @@ Status: exploratory screen, not a strict-official replication. Goal: find where 
 - >= +15 points over none AND >= +10 points over the static-tips control, paired McNemar p < 0.01, in >= 4 of 6 task types.
 - 60 test tasks per method detects only ~10-point gaps: screen results are "promising, to be confirmed", not a ranking.
 
-## Known gaps vs the requested design (need a decision, not silently changed)
-- The repo's runner uses its own per-category train/test splits, not valid_seen / valid_unseen (134 tasks).
-- A static per-task-type tips control at equal token budget is not in the repo; needs implementing (playbook may be close, unverified).
-- Writer arms are prompted (not RL-trained); claims limited accordingly.
+## Design-gap resolutions (user decision: fix them, then start)
+- Splits: use the repo's own per-category train/test splits (not valid_seen/valid_unseen). Stated deviation; results are not comparable to published valid_unseen numbers.
+- Static tips control: the repo's `playbook` arm (fixed per-category procedure, no learning) is the static-tips control. Its length is fixed, not tuned to the 2048-token memory cap; report its token count next to each memory arm's.
+- Thinking off via vLLM `--default-chat-template-kwargs '{"enable_thinking": false}'` (the client has no thinking switch).
+- Writer arms are prompted, not trained; claims limited accordingly.
 
 ## Environment status
 Eval venv (34 tests pass), ALFWorld server venv + 5,234 games, vLLM 0.31.0 (cu130, driver supports CUDA 13.3) installed. Disk is tight: / ~54 GB free and shared.
