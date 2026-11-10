@@ -47,3 +47,17 @@ The counts marked "about" were worked out from the reported differences, not rea
 ## Where the details are
 
 Full numbers and code are in the same folder as this file (`reports/bender/`) in the repository `Vedant2100/evo-mem-bench`, branch `bender-screen-design`.
+
+## A real example
+
+The chore: **"put a clean tomato on the side table"**. This is one of six held-back test tasks of the "clean something and put it away" kind.
+
+- **Without memory**, the helper wandered through cupboards and drawers and used up its 40 turns without finishing. Across the six tasks of this kind it completed **0 of 6**.
+- **With reflection**, the helper had first practised on six similar tasks (for example, cleaning an apple) and written itself short lessons such as:
+  - "Cleaning has to be done at the sink basin, not on a countertop."
+  - "Clean the item *before* putting it down on the table."
+  - "Check likely places like the fridge and countertops first."
+- On the tomato task it then went straight through: open the fridge, take the tomato, go to the sink, clean it, go to the side table, put it down. That took **7 turns**.
+- Across the six tasks of this kind, reflection completed **4 of 6**.
+
+This is one chore type with six tasks, so it shows what reflection can do, not how often it will.
