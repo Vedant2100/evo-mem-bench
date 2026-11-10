@@ -18,14 +18,14 @@ An AI helper is given household tasks in a simulated home, for example "put a cl
 
 ## What happened
 
-| Setup | Tasks completed (of 36) | Success rate |
-|---|---|---|
-| No memory | 16 | 44% |
-| Retrieval of past attempts | about 19 | about 53% |
-| Letta-style note writer | about 19 | about 53% |
-| Fixed hint sheet | about 22 | about 61% |
-| Supervised note writer | about 23 | about 64% |
-| Reflection on past attempts | about 26 | about 72% |
+| Setup | Tasks completed (of 36) | Success rate | What the helper sees before starting (real example, clean-tomato chore) |
+|---|---|---|---|
+| No memory | 16 | 44% | Nothing. Result: took the tomato, skipped cleaning, put it on the table, then got stuck. |
+| Retrieval of past attempts | about 19 | about 53% | Word-for-word records of earlier similar attempts (e.g. an apple-cleaning try), pasted in as they happened. |
+| Letta-style note writer | about 19 | about 53% | A running set of notes: "If the fridge is closed, open it to check." "Find it, clean it in the sink, then place it." |
+| Fixed hint sheet | about 22 | about 61% | One line, same for every task: "Take the target object, clean it using the appropriate sink or faucet, retrieve it, then place it in the requested receptacle." |
+| Supervised note writer | about 23 | about 64% | A short to-do list from a past attempt: "Find the apple and take it. Clean the apple using the sinkbasin. Put the clean apple on the diningtable." |
+| Reflection on past attempts | about 26 | about 72% | Lessons it wrote itself after practice: "Clean at the sink basin, not on a countertop." "Clean before putting it on the table." "Check the fridge and countertops first." |
 
 The counts marked "about" were worked out from the reported differences, not read from the raw counts.
 
