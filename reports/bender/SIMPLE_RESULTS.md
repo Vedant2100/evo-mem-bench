@@ -52,8 +52,8 @@ Full numbers and code are in the same folder as this file (`reports/bender/`) in
 
 The chore: **"put a clean tomato on the side table"**. This is one of six held-back test tasks of the "clean something and put it away" kind.
 
-- **Without memory**, the helper wandered through cupboards and drawers and used up its 40 turns without finishing. Across the six tasks of this kind it completed **0 of 6**.
-- **With reflection**, the helper had first practised on six similar tasks (for example, cleaning an apple) and written itself short lessons such as:
+- **Without memory**, the helper found the tomato in the fridge but put it on the side table without cleaning it first. It then got stuck looking around until its 40 turns ran out. Across the six tasks of this kind it completed **0 of 6**.
+- **With reflection**, the helper had first practised on six similar tasks (for example, cleaning an apple) and written itself short lessons from those attempts. In paraphrase, they said things like:
   - "Cleaning has to be done at the sink basin, not on a countertop."
   - "Clean the item *before* putting it down on the table."
   - "Check likely places like the fridge and countertops first."
