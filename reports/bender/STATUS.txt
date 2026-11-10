@@ -21,3 +21,5 @@
 2026-11-10 14:52:14 screen A analyzed: runs/20261110T201919Z_6f34769
 2026-11-10 14:52:14 screen B analyzed: runs/20261110T201920Z_c9a98d1
 2026-11-10 14:52:14 DONE: reduced screen exit codes A=0 B=0 (missing episodes are NOT zero-success)
+2026-11-10 15:39:19 stream C analyzed: runs/20261110T213750Z_2ce66d4
+2026-11-10 15:39:19 DONE(C): exit 0
