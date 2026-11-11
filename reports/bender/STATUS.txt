@@ -30,3 +30,5 @@
 2026-11-10 17:20:28 smoke(full-matrix) ace started
 2026-11-10 17:40:52 smoke ace OK: runs/20261111T012028Z_088631f
 2026-11-10 17:40:52 smoke(full-matrix) skillweaver started
+2026-11-10 17:57:36 smoke skillweaver OK: runs/20261111T014052Z_db05382
+2026-11-10 17:57:36 smoke(full-matrix) lightweight_memory started
