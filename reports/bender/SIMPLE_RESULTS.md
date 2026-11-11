@@ -84,8 +84,8 @@ What the example shows: every memory setup got the tomato right, because even a 
 No. The original plan listed 10 setups for the screening stage, each with 10 practice and 10 test tasks per kind of chore. Because of the deadline we ran a smaller version: 6 practice and 6 test tasks per kind of chore.
 
 - **Run:** no memory, fixed hint sheet, retrieval, reflection, Letta-style note writer, supervised note writer. We added the two trial-and-error pickers (bandits) later; they come from the project's wider list of methods.
-- **Planned but not run:** "most recent attempts", retrieval filtered by outcome, ExpeL-style rule extraction, and a probabilistic task-state method.
-- **Never run:** the evolutionary search (it needs an extra search step that did not fit the deadline), and the methods adapted from other people's projects (A-MEM, ReasoningBank, Mem0 and others).
+- **Planned but not run at first (now run in the full comparison):** "most recent attempts", outcome-filtered retrieval, ExpeL-style rule extraction, and a probabilistic task-state method.
+- **Only short working checks so far:** the evolutionary search and the methods adapted from other projects (A-MEM, ReasoningBank, Mem0 and others). They ran end to end but have not been run at full size.
 - **Not an RL-trained memory model.** The bandits are the only RL-style method, and they only get 36 practice pulls.
 
 So the results above show how the methods we ran compare. They do not say anything about the ones we left out.
@@ -118,5 +118,21 @@ The bandit methods from the earlier test (above) are not part of this table.
 - The Letta-style writer gave no gain here.
 - With 60 tasks per setup, gaps smaller than about 13 points could be chance.
 
-### Planned methods still not run
-Evolutionary search, and the five methods adapted from other projects (A-MEM, ReasoningBank, AgentKB, AWM, Mem0). Short test runs of evolutionary search, ACE, SkillWeaver and Lightweight Memory finished without errors but were too small to compare.
+### Methods from other projects: short working checks only
+
+We also ran a very short check (a handful of tasks) of each remaining method, only to see whether it runs end to end here. These runs are far too small to compare with the table above, so no success rates are given.
+
+| Method | Ran end to end? |
+|---|---|
+| Evolutionary retrieval search | Yes |
+| ACE | Yes |
+| SkillWeaver | Yes |
+| Lightweight Memory | Yes |
+| ReasoningBank | Yes |
+| AgentKB | Yes |
+| AWM | Yes |
+| Mem0 | Yes (after fixing an out-of-date database library on the machine) |
+| A-MEM | Yes (same fix) |
+| A-MEM with evolving notes | Yes (same fix) |
+
+**Next step if wanted:** run these ten at the full size (10 practice and 10 test tasks per kind of chore) so they can be compared properly with the table above.
