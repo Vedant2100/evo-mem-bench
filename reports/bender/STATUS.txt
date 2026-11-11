@@ -23,3 +23,6 @@
 2026-11-10 14:52:14 DONE: reduced screen exit codes A=0 B=0 (missing episodes are NOT zero-success)
 2026-11-10 15:39:19 stream C analyzed: runs/20261110T213750Z_2ce66d4
 2026-11-10 15:39:19 DONE(C): exit 0
+2026-11-10 16:07:02 STOPPED(full): ALFWorld server 36105 not running
+2026-11-10 16:10:44 full original screen started (10 methods, 10+10 per category) in 3 streams
+2026-11-10 16:14:51 smoke(full-matrix) evolutionary started
