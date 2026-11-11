@@ -34,3 +34,5 @@
 2026-11-10 17:57:36 smoke(full-matrix) lightweight_memory started
 2026-11-10 18:15:22 smoke lightweight_memory OK: runs/20261111T015736Z_2f14e3d
 2026-11-10 18:15:22 DONE: adapter smoke batch 1 (embedding-backed ones not yet tried)
+2026-11-10 21:18:20 full screen A analyzed: runs/20261111T001044Z_423dae7
+2026-11-10 21:18:20 DONE(full A): exit 0
