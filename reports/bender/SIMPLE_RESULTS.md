@@ -16,7 +16,7 @@ An AI helper is given household tasks in a simulated home, for example "put a cl
   6. **Supervised note writer:** a separate writer is prompted to summarise lessons from past attempts.
 - Before each memory setup was tested, it got 6 practice tasks per kind of chore.
 
-## What happened
+## What happened in the first, smaller test (36 test tasks per setup)
 
 | Setup | Tasks completed (of 36) | Success rate | What the helper sees before starting (real example, clean-tomato chore) |
 |---|---|---|---|
@@ -89,3 +89,34 @@ No. The original plan listed 10 setups for the screening stage, each with 10 pra
 - **Not an RL-trained memory model.** The bandits are the only RL-style method, and they only get 36 practice pulls.
 
 So the results above show how the methods we ran compare. They do not say anything about the ones we left out.
+
+---
+
+## The full comparison (60 test tasks per setup)
+
+This is the larger test from the original plan: 10 practice and 10 test tasks for each of the 6 kinds of chore, one run per setup. It ran in three batches. Every batch repeated "no memory" as its own baseline, and the helper's no-memory score moved a little between batches (40%, 43%, 47%), so each setup is compared with its own batch's baseline.
+
+| Setup | Tasks completed (of 60) | Success rate | Gain over no memory in the same batch | What the helper sees before starting (real examples) |
+|---|---|---|---|---|
+| Supervised note writer | 39 | 65% | +18 points | A short to-do list written from past attempts, e.g. "Find the apple and take it. Clean it using the sinkbasin. Put it on the diningtable." |
+| Reflection | 38 | 63% | +20 points | Lessons it wrote about its own earlier tries, e.g. "Clean at the sink basin, not on a countertop." |
+| Bayesian task-state | 38 | 63% | +17 points | A running success score for this kind of chore ("about 92% of the last 10 tries worked") plus a step-by-step record of one that worked. |
+| Fixed hint sheet | 36 | 60% | +20 points | One line, the same for every task: "Take the object, clean it at the sink, retrieve it, then place it." |
+| ExpeL-style rules | 35 | 58% | +15 points | General rules pulled from many past tries, e.g. "Search likely storage places first; if unsure whether it's clean, clean it before placing it." |
+| Outcome-filtered retrieval | 33 | 55% | +12 points | Word-for-word records of similar past tries, each marked SUCCESS or FAIL. |
+| Recent attempts | 32 | 53% | +13 points | Word-for-word records of the most recent past tries, whatever they were about. |
+| Retrieval | 30 | 50% | +10 points | Word-for-word records of the most similar past tries. |
+| Letta-style note writer | 28 | 47% | 0 points | A running set of notes, rewritten as it goes. |
+| No memory (three batches) | 24 / 28 / 26 | 40% / 47% / 43% | n/a | Nothing. |
+
+The bandit methods from the earlier test (above) are not part of this table.
+
+### What it shows
+- Four setups finished close together at the top: the supervised note writer, reflection, Bayesian task-state and the fixed hint sheet (60% to 65%). One run per setup can't tell them apart.
+- The fixed hint sheet, which costs nothing to make, did as well as the clever methods. That is a warning about how much the clever methods add.
+- Methods that paste in whole records of past tries (retrieval, recent attempts, outcome-filtered) helped less than methods that boil the past down into short advice.
+- The Letta-style writer gave no gain here.
+- With 60 tasks per setup, gaps smaller than about 13 points could be chance.
+
+### Planned methods still not run
+Evolutionary search, and the five methods adapted from other projects (A-MEM, ReasoningBank, AgentKB, AWM, Mem0). Short test runs of evolutionary search, ACE, SkillWeaver and Lightweight Memory finished without errors but were too small to compare.
