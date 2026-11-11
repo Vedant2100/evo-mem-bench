@@ -65,3 +65,5 @@
 2026-11-11 08:14:04 FINAL full-size run of remaining 10 methods started (4 streams)
 2026-11-11 08:49:06 ROOT CAUSE of disk drain: ALFWorld game servers leak ~44MB deleted library copies per episode; restarted servers (freed ~120 GB) and relaunching final run
 2026-11-11 08:49:06 FINAL full-size run of remaining 10 methods started (4 streams)
+2026-11-11 14:51:14 final D analyzed: runs/20261111T164906Z_d42a4b6
+2026-11-11 14:51:14 DONE(final D): exit 0 (missing episodes are NOT zero-success)
