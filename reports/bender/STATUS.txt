@@ -36,3 +36,5 @@
 2026-11-10 18:15:22 DONE: adapter smoke batch 1 (embedding-backed ones not yet tried)
 2026-11-10 21:18:20 full screen A analyzed: runs/20261111T001044Z_423dae7
 2026-11-10 21:18:20 DONE(full A): exit 0
+2026-11-10 21:26:24 full screen C analyzed: runs/20261111T001044Z_b759ae4
+2026-11-10 21:26:24 DONE(full C): exit 0
