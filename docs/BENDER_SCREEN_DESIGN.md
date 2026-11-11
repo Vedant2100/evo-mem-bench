@@ -38,3 +38,6 @@ User needs a verdict by 15:30 on whether RL-trained memory writers are worth pur
 
 ## Amendment 3 (2026-11-10 12:45, before results): add RL-style arms
 User pointed out the reduced screen (Amendment 2) omitted the repo's reinforcement-learning-style methods. Added Stream C: none, bandit (UCB over bm25/recent/random), contextual_bandit (LinUCB), same 6 train + 6 test per category, seed 0, so none is paired with the same tasks. Not included: `evolutionary` (needs a validation search; too slow for the 15:30 deadline). Caveat: with only 36 training episodes a bandit gets few updates, so a null result is weak evidence against bandits; it is not a test of RL-trained weights (the LoRA track is behavioral cloning, also not run).
+
+## Amendment 4 (2026-11-10 16:10, before results)
+User asked to run the original memory matrix. Running the original stage-3 screen as designed: 10 train + 10 test per category, seed 0, 40 rounds, Qwen3-32B-AWQ. Three streams, `none` paired in each: A = playbook, recent, bm25; B = outcome_bm25, reflexion, expel; C = letta_consolidation, supervised_writer, bayesian_state. Not included: bandit (already run at 6+6, could be added later), evolutionary (needs validation search), upstream adapters (A-MEM, ReasoningBank, ACE, AgentKB, AWM, Mem0, SkillWeaver, Lightweight Memory). Chain: `chain/chain7.sh`.
