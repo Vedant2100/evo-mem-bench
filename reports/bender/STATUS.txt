@@ -63,3 +63,5 @@
 2026-11-11 08:08:44 smoke amem OK: runs/20261111T155146Z_5d9e216
 2026-11-11 08:08:44 DONE: embedding-backed retry batch
 2026-11-11 08:14:04 FINAL full-size run of remaining 10 methods started (4 streams)
+2026-11-11 08:49:06 ROOT CAUSE of disk drain: ALFWorld game servers leak ~44MB deleted library copies per episode; restarted servers (freed ~120 GB) and relaunching final run
+2026-11-11 08:49:06 FINAL full-size run of remaining 10 methods started (4 streams)
