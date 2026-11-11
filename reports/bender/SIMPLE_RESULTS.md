@@ -26,6 +26,8 @@ An AI helper is given household tasks in a simulated home, for example "put a cl
 | Fixed hint sheet | about 22 | about 61% | One line, same for every task: "Take the target object, clean it using the appropriate sink or faucet, retrieve it, then place it in the requested receptacle." |
 | Supervised note writer | about 23 | about 64% | A short to-do list from a past attempt: "Find the apple and take it. Clean the apple using the sinkbasin. Put the clean apple on the diningtable." |
 | Reflection on past attempts | about 26 | about 72% | Lessons it wrote itself after practice: "Clean at the sink basin, not on a countertop." "Clean before putting it on the table." "Check the fridge and countertops first." |
+| Trial-and-error picker (bandit) | 22 | 61% (vs 39% no-memory baseline in its own run) | Before each task it picks one of three ways of looking up past attempts (similar, most recent, or random) and learns from results which pick works. Its first 36 practice tasks are the only learning. |
+| Trial-and-error picker using task details (contextual bandit) | 21 | 58% (same run) | Same picker, but it also looks at the kind of chore when choosing. |
 
 The counts marked "about" were worked out from the reported differences, not read from the raw counts.
 
@@ -76,3 +78,14 @@ All of these use the same chore: **"put a clean tomato on the side table"**. The
 | Supervised note writer | A short to-do list from a past attempt: "Find the apple and take it. Clean the apple using the sinkbasin. Put the clean apple on the diningtable." | Succeeded. | 1 of 6 |
 
 What the example shows: every memory setup got the tomato right, because even a one-line reminder to clean it first was enough. What it hides is that the setups differ a lot across the other five tasks. On this chore type the plain hint sheet did better than the more elaborate methods, and reflection's advantage showed up in the other chore types. This is one chore type with six tasks per setup, so it is an illustration, not a ranking.
+
+## Is this the full list of methods we planned?
+
+No. The original plan listed 10 setups for the screening stage, each with 10 practice and 10 test tasks per kind of chore. Because of the deadline we ran a smaller version: 6 practice and 6 test tasks per kind of chore.
+
+- **Run:** no memory, fixed hint sheet, retrieval, reflection, Letta-style note writer, supervised note writer. We added the two trial-and-error pickers (bandits) later; they come from the project's wider list of methods.
+- **Planned but not run:** "most recent attempts", retrieval filtered by outcome, ExpeL-style rule extraction, and a probabilistic task-state method.
+- **Never run:** the evolutionary search (it needs an extra search step that did not fit the deadline), and the methods adapted from other people's projects (A-MEM, ReasoningBank, Mem0 and others).
+- **Not an RL-trained memory model.** The bandits are the only RL-style method, and they only get 36 practice pulls.
+
+So the results above show how the methods we ran compare. They do not say anything about the ones we left out.
