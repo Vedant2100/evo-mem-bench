@@ -41,3 +41,13 @@
 2026-11-10 21:46:51 full screen B analyzed: runs/20261111T001044Z_b906ad2
 2026-11-10 21:46:51 DONE(full B): exit 0
 2026-11-10 21:46:51 DONE: full original screen finished (missing episodes are NOT zero-success)
+2026-11-11 07:25:24 smoke(emb) amem started
+2026-11-11 07:29:55 smoke(emb) amem_evolving started (port 36106)
+2026-11-11 07:29:55 smoke(emb) amem started (port 36105)
+2026-11-11 07:29:55 smoke(emb) reasoning_bank started (port 36118)
+2026-11-11 07:34:33 smoke amem_evolving FAILED exit 1:   File "/var/tmp/vbork001/evomem/evo-mem-bench/scripts/run_experiment.py", line 212, in condition     raise RuntimeError(f"Upstream evaluator returned {completed.returncode}; inspect {log}") RuntimeError: Upstream evaluator returned 1; inspect /var/tmp/vbork001/evomem/evo-mem-bench/runs/20261111T152
+2026-11-11 07:34:33 smoke(emb) awm started (port 36106)
+2026-11-11 07:34:54 smoke amem FAILED exit 1:   File "/var/tmp/vbork001/evomem/evo-mem-bench/scripts/run_experiment.py", line 212, in condition     raise RuntimeError(f"Upstream evaluator returned {completed.returncode}; inspect {log}") RuntimeError: Upstream evaluator returned 1; inspect /var/tmp/vbork001/evomem/evo-mem-bench/runs/20261111T152
+2026-11-11 07:34:54 smoke(emb) agent_kb started (port 36105)
+2026-11-11 07:43:50 smoke reasoning_bank OK: runs/20261111T152955Z_e1345da
+2026-11-11 07:43:50 smoke(emb) mem0 started (port 36118)

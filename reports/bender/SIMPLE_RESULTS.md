@@ -43,7 +43,7 @@ The counts marked "about" were worked out from the reported differences, not rea
 - **Small test.** There are only 36 tasks per setup and we ran each setup once. Differences smaller than about 20 points could be down to chance. Only reflection's lead is large enough to stand out.
 - **One kind of chore never worked.** Heating things (for example "heat a potato and put it on the counter") failed almost every time, with or without memory, so it tells us nothing.
 - **Not strict.** We lowered our own pass bar for the helper's baseline skill to meet a deadline, so treat this as a first look, not a final result.
-- **What we did not test.** We did not train any model with reinforcement learning. All memory was given as prompts. A trial of "trial-and-error" selection methods (bandits) was still finishing when this was written.
+- **What we did not test.** We did not train any model with reinforcement learning. All memory was given as prompts. The "trial-and-error" selection methods (bandits) ran only in the first, smaller test and got just 36 practice pulls.
 - **One helper, one home simulator.** Results may not carry over to other models or settings.
 
 ## Where the details are
