@@ -32,3 +32,5 @@
 2026-11-10 17:40:52 smoke(full-matrix) skillweaver started
 2026-11-10 17:57:36 smoke skillweaver OK: runs/20261111T014052Z_db05382
 2026-11-10 17:57:36 smoke(full-matrix) lightweight_memory started
+2026-11-10 18:15:22 smoke lightweight_memory OK: runs/20261111T015736Z_2f14e3d
+2026-11-10 18:15:22 DONE: adapter smoke batch 1 (embedding-backed ones not yet tried)
