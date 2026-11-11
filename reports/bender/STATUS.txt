@@ -51,3 +51,10 @@
 2026-11-11 07:34:54 smoke(emb) agent_kb started (port 36105)
 2026-11-11 07:43:50 smoke reasoning_bank OK: runs/20261111T152955Z_e1345da
 2026-11-11 07:43:50 smoke(emb) mem0 started (port 36118)
+2026-11-11 07:48:10 smoke awm OK: runs/20261111T153434Z_399f6a7
+2026-11-11 07:48:25 smoke mem0 FAILED exit 1:   File "/var/tmp/vbork001/evomem/evo-mem-bench/scripts/run_experiment.py", line 212, in condition     raise RuntimeError(f"Upstream evaluator returned {completed.returncode}; inspect {log}") RuntimeError: Upstream evaluator returned 1; inspect /var/tmp/vbork001/evomem/evo-mem-bench/runs/20261111T154
+2026-11-11 07:50:56 smoke agent_kb OK: runs/20261111T153455Z_bfaf5a5
+2026-11-11 07:50:56 DONE: embedding-backed smoke batch
+2026-11-11 07:51:46 smoke(emb) amem started (port 36105)
+2026-11-11 07:51:46 smoke(emb) amem_evolving started (port 36106)
+2026-11-11 07:51:46 smoke(emb) mem0 started (port 36118)
