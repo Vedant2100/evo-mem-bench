@@ -71,3 +71,6 @@
 2026-11-11 15:42:26 DONE(final B): exit 0 (missing episodes are NOT zero-success)
 2026-11-11 15:43:28 final A analyzed: runs/20261111T164906Z_9dfc7fb
 2026-11-11 15:43:28 DONE(final A): exit 0 (missing episodes are NOT zero-success)
+2026-11-11 16:02:03 final C analyzed: runs/20261111T164907Z_de63f58
+2026-11-11 16:02:03 DONE(final C): exit 0 (missing episodes are NOT zero-success)
+2026-11-11 16:02:03 DONE: FINAL full-size run finished

@@ -118,21 +118,57 @@ The bandit methods from the earlier test (above) are not part of this table.
 - The Letta-style writer gave no gain here.
 - With 60 tasks per setup, gaps smaller than about 13 points could be chance.
 
-### Methods from other projects: short working checks only
+### The remaining methods at full size
 
-We also ran a very short check (a handful of tasks) of each remaining method, only to see whether it runs end to end here. These runs are far too small to compare with the table above, so no success rates are given.
+The ten methods adapted from other projects, plus evolutionary search, were then run at the same size (60 test tasks each). Again each batch repeated "no memory" as its own baseline (38% to 47% across batches).
 
-| Method | Ran end to end? |
-|---|---|
-| Evolutionary retrieval search | Yes |
-| ACE | Yes |
-| SkillWeaver | Yes |
-| Lightweight Memory | Yes |
-| ReasoningBank | Yes |
-| AgentKB | Yes |
-| AWM | Yes |
-| Mem0 | Yes (after fixing an out-of-date database library on the machine) |
-| A-MEM | Yes (same fix) |
-| A-MEM with evolving notes | Yes (same fix) |
+| Setup | Tasks completed (of 60) | Success rate | Gain over no memory in the same batch |
+|---|---|---|---|
+| AWM | 40 | 67% | +25 points |
+| AgentKB | 36 | 60% | +18 points |
+| A-MEM | 34 | 57% | +18 points |
+| Evolutionary retrieval search | 34 | 57% | +10 points |
+| Mem0 | 33 | 55% | +17 points |
+| ReasoningBank | 33 | 55% | +13 points |
+| Lightweight Memory | 32 | 53% | +10 points |
+| A-MEM with evolving notes | 31 | 52% | +13 points |
+| ACE | 27 | 45% | +2 points |
+| SkillWeaver | 27 | 45% | +2 points |
 
-**Next step if wanted:** run these ten at the full size (10 practice and 10 test tasks per kind of chore) so they can be compared properly with the table above.
+## All methods together (full size, 60 test tasks each unless noted)
+
+| Rank | Setup | Success rate | Gain over its own no-memory baseline |
+|---|---|---|---|
+| 1 | AWM | 67% | +25 |
+| 2 | Supervised note writer | 65% | +18 |
+| 3 | Reflection | 63% | +20 |
+| 3 | Bayesian task-state | 63% | +17 |
+| 5 | Fixed hint sheet | 60% | +20 |
+| 5 | AgentKB | 60% | +18 |
+| 7 | ExpeL-style rules | 58% | +15 |
+| 8 | A-MEM | 57% | +18 |
+| 8 | Evolutionary retrieval search | 57% | +10 |
+| 10 | Outcome-filtered retrieval | 55% | +12 |
+| 10 | ReasoningBank | 55% | +13 |
+| 10 | Mem0 | 55% | +17 |
+| 13 | Recent attempts | 53% | +13 |
+| 13 | Lightweight Memory | 53% | +10 |
+| 15 | A-MEM with evolving notes | 52% | +13 |
+| 16 | Retrieval | 50% | +10 |
+| 17 | Letta-style note writer | 47% | 0 |
+| 18 | ACE | 45% | +2 |
+| 18 | SkillWeaver | 45% | +2 |
+| (n/a) | No memory, across 8 batches | 38% to 47% | n/a |
+
+The two trial-and-error pickers (bandits) were tested only in the smaller first test, on 36 tasks: 61% and 58% against 39% with no memory. They are not ranked here because of the different size.
+
+### What to take from the whole set
+- **Every method but three helped a bit or a lot.** The Letta-style writer, ACE and SkillWeaver added essentially nothing (0 to +2 points).
+- **A group of about eight setups finished within a few points of each other** (AWM, supervised note writer, reflection, Bayesian task-state, the fixed hint sheet, AgentKB, ExpeL-style rules, A-MEM). With 60 tasks each and one run, we can't say which of these is really best.
+- **The free fixed hint sheet matched the clever methods.** Most of the benefit seems to come from telling the helper the basic procedure (find it, clean or heat it, then put it away), not from remembering specific past tries.
+- **Short advice beat whole transcripts.** Methods that boil the past into short rules or workflows tended to beat methods that paste in old records.
+- **Heating chores stayed near 0% for every setup.** The helper is not good enough at that chore for memory to change the picture here.
+- **No RL-trained memory model was tested.** The only RL-style methods were the two bandits, with 36 practice pulls.
+
+### Limits
+One run per setup, one helper model, one home simulator, and no-memory scores that moved by up to 9 points between batches. Differences under about 13 points could be chance. This is a first look to pick candidates for a proper repeat, not a final ranking.
